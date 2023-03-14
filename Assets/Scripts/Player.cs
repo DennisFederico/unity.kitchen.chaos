@@ -4,7 +4,7 @@ using UnityEngine;
 public class Player : MonoBehaviour, IKitchenObjectParent {
 
     public class SelectedCounter {
-        public ClearCounter ClearCounter;
+        public BaseCounter BaseCounter;
     }
     
     public static Player Instance { get; private set; }
@@ -19,7 +19,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent {
     private bool _isWalking;
     private Vector3 _lastInteractDirection;
     private KitchenObject _kitchenObject;
-    private ClearCounter _selectedCounter;
+    private BaseCounter _selectedCounter;
 
     private void Awake() {
         if (Instance != null) {
@@ -31,15 +31,17 @@ public class Player : MonoBehaviour, IKitchenObjectParent {
 
     private void OnEnable() {
         gameInput.OnInteractAction += GameInputOnInteractAction;
+        gameInput.OnInteractAlternateAction += GameInputOnInteractAlternateAction;
     }
 
     private void OnDisable() {
         gameInput.OnInteractAction -= GameInputOnInteractAction;
+        gameInput.OnInteractAlternateAction -= GameInputOnInteractAlternateAction;
     }
 
     private void Update() {
         HandleMovement();
-        HandleInteraction();
+        HandleSelectCounter();
     }
 
     private void HandleMovement() {
@@ -54,10 +56,10 @@ public class Player : MonoBehaviour, IKitchenObjectParent {
             //Try move X and Z independently
             var moveX = new Vector3(moveDirection.x, 0, 0).normalized;
             var moveZ = new Vector3(0, 0, moveDirection.z).normalized;
-            if (!Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveX, moveDistance)) {
+            if (moveDirection.x != 0 && !Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveX, moveDistance)) {
                 moveDirection = moveX;
                 collided = false;
-            } else if (!Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveZ, moveDistance)) {
+            } else if (moveDirection.z != 0 && !Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveZ, moveDistance)) {
                 moveDirection = moveZ;
                 collided = false;
             }
@@ -69,7 +71,7 @@ public class Player : MonoBehaviour, IKitchenObjectParent {
         transform.forward = Vector3.Slerp(transform.forward, moveDirection,Time.deltaTime * rotateSpeed);
     }
 
-    private void HandleInteraction() {
+    private void HandleSelectCounter() {
         var inputVector = gameInput.GetMovementNormalizedVector();
         var  moveDirection= new Vector3(inputVector.x, 0f, inputVector.y);
         float interactionDistance = 2f;
@@ -79,8 +81,8 @@ public class Player : MonoBehaviour, IKitchenObjectParent {
         }
 
         if (Physics.Raycast(transform.position, _lastInteractDirection, out RaycastHit raycastHit, interactionDistance, countersLayerMask)) {
-            if (raycastHit.transform.TryGetComponent<ClearCounter>(out var clearCounter)) {
-                SetSelectedCounter(clearCounter);
+            if (raycastHit.transform.TryGetComponent<BaseCounter>(out var counter)) {
+                SetSelectedCounter(counter);
             } else {
                 SetSelectedCounter(null);         
             }
@@ -89,17 +91,21 @@ public class Player : MonoBehaviour, IKitchenObjectParent {
         }
     }
 
-    private void SetSelectedCounter(ClearCounter selectedCounter) {
+    private void SetSelectedCounter(BaseCounter selectedCounter) {
         if (_selectedCounter != selectedCounter) {
             _selectedCounter = selectedCounter;
             OnSelectedCounterChanged?.Invoke(new SelectedCounter() {
-                ClearCounter = selectedCounter
+                BaseCounter = selectedCounter
             });
         }
     }
     
     private void GameInputOnInteractAction() {
         if (_selectedCounter != null) _selectedCounter.Interact(this);
+    }
+    
+    private void GameInputOnInteractAlternateAction() {
+        if (_selectedCounter != null) _selectedCounter.InteractAlternate(this);
     }
     
     public bool IsWalking() {
