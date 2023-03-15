@@ -1,17 +1,15 @@
 using UnityEngine;
 
 namespace Counters {
-    public class BaseCounter : MonoBehaviour, IKitchenObjectParent {
+    public abstract class BaseCounter : MonoBehaviour, IKitchenObjectParent {
 
         [SerializeField] private Transform kitchenObjectParentPoint;
         private KitchenObject _kitchenObject;
 
-        public virtual void Interact(Player player) {
-            Debug.Log($"BaseCounter.Interact - Invalid call");
-        }
+        public abstract void Interact(Player player);
     
         public virtual void InteractAlternate(Player player) {
-            Debug.Log($"BaseCounter.AlternateInteract - Invalid call");
+            //Debug.Log($"BaseCounter.AlternateInteract - Invalid call");
         }
 
         public Transform GetKitchenObjectParentPoint() {

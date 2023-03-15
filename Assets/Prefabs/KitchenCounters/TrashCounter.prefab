@@ -109,7 +109,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34c21fced797b445a81373e2cf90f240, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  kitchenObjectParentPoint: {fileID: 0}
+  kitchenObjectParentPoint: {fileID: 8038443941020905020}
+--- !u!4 &8038443941020905020 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7864637937172081973, guid: 7e7287e6765344a2b9ce14d933f2f400,
+    type: 3}
+  m_PrefabInstance: {fileID: 192111781664178953}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2382348234483060545
 PrefabInstance:
   m_ObjectHideFlags: 0
