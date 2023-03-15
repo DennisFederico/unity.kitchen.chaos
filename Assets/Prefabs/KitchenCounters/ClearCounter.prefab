@@ -100,7 +100,7 @@ PrefabInstance:
     - target: {fileID: 4589716710238282922, guid: 0004cb1e11ad014419b943c7da960724,
         type: 3}
       propertyPath: m_Name
-      value: SelectedCounter_Visual
+      value: CounterSelected_Visual
       objectReference: {fileID: 0}
     - target: {fileID: 4589716710238282922, guid: 0004cb1e11ad014419b943c7da960724,
         type: 3}
@@ -339,8 +339,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   kitchenObjectParentPoint: {fileID: 1262183791337129733}
-  kitchenObjectScriptable: {fileID: 11400000, guid: e21c484e2a5764cec8381fd6330ef7d1,
-    type: 2}
 --- !u!4 &8960364385367643050 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 70219342535621018, guid: 7e7287e6765344a2b9ce14d933f2f400,

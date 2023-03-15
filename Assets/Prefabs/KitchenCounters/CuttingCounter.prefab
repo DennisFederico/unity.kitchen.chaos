@@ -181,6 +181,7 @@ GameObject:
   - component: {fileID: 5030553497966825130}
   - component: {fileID: 930204267913909878}
   - component: {fileID: 3099027608563490931}
+  - component: {fileID: 2420197235459173896}
   m_Layer: 5
   m_Name: ProgressBarUI
   m_TagString: Untagged
@@ -286,6 +287,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cuttingCounter: {fileID: 8262113333154760177}
   barImage: {fileID: 5861793293560156094}
+--- !u!114 &2420197235459173896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5541420543700996818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31bf73153b7ff4a10a92f4b616c8afd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lookMode: 2
 --- !u!1001 &4170579817983214758
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -477,10 +491,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3326444672901817116, guid: 7e7287e6765344a2b9ce14d933f2f400,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7865623959123158794, guid: 7e7287e6765344a2b9ce14d933f2f400,
         type: 3}
       propertyPath: m_Name
       value: CuttingCounter
+      objectReference: {fileID: 0}
+    - target: {fileID: 7865623959123158794, guid: 7e7287e6765344a2b9ce14d933f2f400,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -559,7 +583,7 @@ PrefabInstance:
     - target: {fileID: 4589716710238282922, guid: d72bee846803d074784ffb8f64e993ca,
         type: 3}
       propertyPath: m_Name
-      value: Selected
+      value: CounterSelected_Visual
       objectReference: {fileID: 0}
     - target: {fileID: 4589716710238282923, guid: d72bee846803d074784ffb8f64e993ca,
         type: 3}
