@@ -1,4 +1,5 @@
 using System;
+using KitchenObjects;
 using ScriptableObjects;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace Counters {
         [SerializeField] private CuttingRecipeScriptable[] cuttingRecipes;
         private int _cuttingProgress;
     
-        public override void Interact(Player player) {
+        public override void Interact(Player.Player player) {
             if (!HasKitchenObject() && player.HasKitchenObject()) {
                 if (cuttingRecipes.TryGetCuttingRecipeWithInput(out var outputRecipe, player.GetKitchenObject().KitchenObjectScriptable)) {
                     player.GetKitchenObject().SetKitchenObjectParent(this);
@@ -23,7 +24,7 @@ namespace Counters {
             }
         }
 
-        public override void InteractAlternate(Player player) {
+        public override void InteractAlternate(Player.Player player) {
             if (!HasKitchenObject()) return;
             var kitchenObjectScriptableInput = GetKitchenObject().KitchenObjectScriptable;
             if (cuttingRecipes.TryGetCuttingRecipeWithInput(out var outputRecipe, kitchenObjectScriptableInput)) {

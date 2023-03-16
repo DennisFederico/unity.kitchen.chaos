@@ -1,4 +1,5 @@
 using System;
+using KitchenObjects;
 using ScriptableObjects;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ namespace Counters {
             }
         }
 
-        public override void Interact(Player player) {
+        public override void Interact(Player.Player player) {
             if (player.HasKitchenObject() || _spawnedPlatesAmount == 0) return;
 
             _spawnedPlatesAmount--;

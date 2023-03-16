@@ -1,4 +1,5 @@
 using System;
+using KitchenObjects;
 using ScriptableObjects;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace Counters {
         public event Action OnGrabObjectFromContainer;
         [SerializeField] private KitchenObjectScriptable kitchenObjectScriptable;
 
-        public override void Interact(Player player) {
+        public override void Interact(Player.Player player) {
             if (player.HasKitchenObject()) return;
             KitchenObject.SpawnKitchenObject(kitchenObjectScriptable, player);
             OnGrabObjectFromContainer?.Invoke();

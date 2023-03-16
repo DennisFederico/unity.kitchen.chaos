@@ -1,3 +1,4 @@
+using KitchenObjects;
 using UnityEngine;
 
 namespace Counters {
@@ -6,9 +7,9 @@ namespace Counters {
         [SerializeField] private Transform kitchenObjectParentPoint;
         private KitchenObject _kitchenObject;
 
-        public abstract void Interact(Player player);
+        public abstract void Interact(Player.Player player);
     
-        public virtual void InteractAlternate(Player player) {
+        public virtual void InteractAlternate(Player.Player player) {
             //Debug.Log($"BaseCounter.AlternateInteract - Invalid call");
         }
 

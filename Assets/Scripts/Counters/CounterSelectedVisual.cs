@@ -7,7 +7,7 @@ namespace Counters {
         [SerializeField] private GameObject[] selectedVisualArray;
 
         private void Start() {
-            Player.Instance.OnSelectedCounterChanged += PlayerOnSelectedCounterChanged;
+            Player.Player.Instance.OnSelectedCounterChanged += PlayerOnSelectedCounterChanged;
         }
     
         // private void OnEnable() {
@@ -18,7 +18,7 @@ namespace Counters {
         //     Player.Instance.OnSelectedCounterChanged -= PlayerOnOnSelectedCounterChanged;
         // }
 
-        private void PlayerOnSelectedCounterChanged(Player.SelectedCounter counterSelectedChange) {
+        private void PlayerOnSelectedCounterChanged(Player.Player.SelectedCounter counterSelectedChange) {
             if (baseCounter == counterSelectedChange.BaseCounter) {
                 Selected();
             } else {
