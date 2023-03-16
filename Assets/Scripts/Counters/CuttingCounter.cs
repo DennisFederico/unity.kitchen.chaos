@@ -3,8 +3,8 @@ using ScriptableObjects;
 using UnityEngine;
 
 namespace Counters {
-    public class CuttingCounter : BaseCounter {
-
+    public class CuttingCounter : BaseCounter, IHasProgress {
+        
         public event Action<float> OnProgressChange;
         public event Action OnCutAction; 
         [SerializeField] private CuttingRecipeScriptable[] cuttingRecipes;

@@ -1,21 +1,24 @@
 using System;
-using Counters;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ProgressBarUI : MonoBehaviour {
-    [SerializeField] private CuttingCounter cuttingCounter;
+    
+    [SerializeField] private GameObject hasProgressCounterGameObject;
     [SerializeField] private Image barImage;
-
+    private IHasProgress _hasProgressCounter;
+    
     private void Start() {
-        cuttingCounter.OnProgressChange += CuttingCounterOnProgressChange;
+        _hasProgressCounter = hasProgressCounterGameObject.GetComponent<IHasProgress>();
+        //On Null pointer exception the GameObject does not implement IHasProgress
+        _hasProgressCounter.OnProgressChange += HasProgressCounterOnProgressChange;
         barImage.fillAmount = 0f;
         Hide();
     }
 
-    private void CuttingCounterOnProgressChange(float amount) {
+    private void HasProgressCounterOnProgressChange(float amount) {
         barImage.fillAmount = amount;
-        if (amount == 0f || Math.Abs(amount - 1f) < 0.1f) {
+        if (amount is 0f or >= 1f) {
             Hide();
         } else {
             Show();
