@@ -18,9 +18,15 @@ namespace Counters {
                     _cuttingProgress = 0;
                     OnProgressChange?.Invoke((float)_cuttingProgress/outputRecipe.cuttingProgressMax);
                 }
-            } else if (HasKitchenObject() && !player.HasKitchenObject()) {
-                GetKitchenObject().SetKitchenObjectParent(player);
-                OnProgressChange?.Invoke(0f);
+            } else if (HasKitchenObject()) {
+                if (!player.HasKitchenObject()) {
+                    GetKitchenObject().SetKitchenObjectParent(player);
+                    OnProgressChange?.Invoke(0f);
+                } else if (player.GetKitchenObject().TryGetAsPlate(out var plateKitchenObject)) {
+                    if (plateKitchenObject.TryAddIngredient(GetKitchenObject().KitchenObjectScriptable)) {
+                        GetKitchenObject().DestroySelf();
+                    }
+                }
             }
         }
 

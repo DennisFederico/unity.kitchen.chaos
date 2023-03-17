@@ -24,9 +24,7 @@ namespace Counters {
                     _currentFryingTime = 0;
                     OnProgressChange?.Invoke(0.01f);
                 } else {
-                    _isTurnedOn = false;
-                    StoveOnOffChanged?.Invoke(false);
-                    OnProgressChange?.Invoke(1f);
+                    TurnOffStove();
                 }
             }
         }
@@ -41,12 +39,24 @@ namespace Counters {
                     StoveOnOffChanged?.Invoke(true);
                     OnProgressChange?.Invoke(_currentFryingTime/_currentFryingRecipe.maxFryingTime);
                 }
-            } else if (HasKitchenObject() && !player.HasKitchenObject()) {
-                GetKitchenObject().SetKitchenObjectParent(player);
-                _isTurnedOn = false;
-                OnProgressChange?.Invoke(0f);
-                StoveOnOffChanged?.Invoke(false);
+            } else if (HasKitchenObject()) {
+                if (!player.HasKitchenObject()) {
+                    GetKitchenObject().SetKitchenObjectParent(player);
+                    TurnOffStove();
+                } else if (player.GetKitchenObject().TryGetAsPlate(out var plateKitchenObject)) {
+                    if (plateKitchenObject.TryAddIngredient(GetKitchenObject().KitchenObjectScriptable)) {
+                        GetKitchenObject().DestroySelf();
+                        TurnOffStove();
+                    }
+                }
             }
+        }
+        
+        private void TurnOffStove() {
+            _isTurnedOn = false;
+            _currentFryingRecipe = null;
+            StoveOnOffChanged?.Invoke(false);
+            OnProgressChange?.Invoke(0f);
         }
     }
 }

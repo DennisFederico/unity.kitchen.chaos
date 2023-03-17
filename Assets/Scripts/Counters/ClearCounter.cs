@@ -9,11 +9,15 @@ namespace Counters {
             } else if (HasKitchenObject()) { 
                 if (!player.HasKitchenObject()) { 
                     GetKitchenObject().SetKitchenObjectParent(player);
-                } else if (player.GetKitchenObject() is PlateKitchenObject) {
+                } else if (player.GetKitchenObject().TryGetAsPlate(out var playerPlate)) {
                     //If it is a plate, add the ingredient to the plate
-                    var plateKitchenObject = player.GetKitchenObject() as PlateKitchenObject;
-                    plateKitchenObject.AddIngredient(GetKitchenObject().KitchenObjectScriptable);
-                    GetKitchenObject().DestroySelf();
+                    if (playerPlate.TryAddIngredient(GetKitchenObject().KitchenObjectScriptable)) {
+                        GetKitchenObject().DestroySelf();
+                    }
+                } else if (GetKitchenObject().TryGetAsPlate(out var counterPlate)) {
+                    if (counterPlate.TryAddIngredient(player.GetKitchenObject().KitchenObjectScriptable)) {
+                        player.GetKitchenObject().DestroySelf();
+                    }
                 }
             }
         }
