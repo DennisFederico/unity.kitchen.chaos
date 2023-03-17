@@ -10,9 +10,14 @@ namespace Counters {
         [SerializeField] private KitchenObjectScriptable kitchenObjectScriptable;
 
         public override void Interact(Player.Player player) {
-            if (player.HasKitchenObject()) return;
-            KitchenObject.SpawnKitchenObject(kitchenObjectScriptable, player);
-            OnGrabObjectFromContainer?.Invoke();
+            if (!player.HasKitchenObject()) {
+                KitchenObject.SpawnKitchenObject(kitchenObjectScriptable, player);
+                OnGrabObjectFromContainer?.Invoke();
+            } else if (player.GetKitchenObject().TryGetAsPlate(out var plateKitchenObject)) {
+                if (plateKitchenObject.TryAddIngredient(kitchenObjectScriptable)) {
+                    OnGrabObjectFromContainer?.Invoke();
+                }
+            }
         }
 
         public Sprite GetContainerSprite() {

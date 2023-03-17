@@ -17,5 +17,6 @@ public class PlateIconsUI : MonoBehaviour {
     private void UpdateVisual(KitchenObjectScriptable ingredient) {
         var iconTransform = Instantiate(iconTemplate, transform);
         iconTransform.GetComponent<PlateIconSingleUI>().SetKitchenObjectScriptable(ingredient);
+        iconTransform.gameObject.SetActive(true);
     }
 }
