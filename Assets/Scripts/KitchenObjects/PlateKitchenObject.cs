@@ -24,5 +24,10 @@ namespace KitchenObjects {
             AddedIngredient?.Invoke(kitchenObjectScriptable);
             return true;
         }
+
+        public List<KitchenObjectScriptable> IngredientsList {
+            get => _ingredientsList;
+            private set => _ingredientsList = value;
+        }
     }
 }
