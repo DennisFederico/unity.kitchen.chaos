@@ -8,13 +8,16 @@ using Random = UnityEngine.Random;
 
 public class DeliveryManager : MonoBehaviour {
     public static DeliveryManager Instance { get; private set; }
+    public Action<EndRecipeScriptable> NewOrderArrived;
+    public Action<EndRecipeScriptable> OrderFulfilled;
+    
     [SerializeField] private EndRecipeListScriptable levelRecipeList;
 
     private List<EndRecipeScriptable> _waitingOrders;
     private List<EndRecipeScriptable> _levelRecipesSortedByIngredientName;
     private float _recipeSpawnTimer;
-    private float _recipeSpawnTimerMax = 4f;
-    private int _waitingRecipesMax = 4;
+    private readonly float _recipeSpawnTimerMax = 4f;
+    private readonly int _waitingRecipesMax = 4;
 
     private void Awake() {
         Instance = this;
@@ -22,7 +25,7 @@ public class DeliveryManager : MonoBehaviour {
         _waitingOrders = new();
         _levelRecipesSortedByIngredientName = new();
         
-        //To speed up the comparison process, sort it only once
+        //To speed up the comparison process, sort it only once - TODO ADD SORT INDEX TO THE INGREDIENT ScriptableObject
         foreach (var recipe in levelRecipeList.endRecipesList) {
             var sortedRecipe = ScriptableObject.CreateInstance<EndRecipeScriptable>();
             sortedRecipe.recipeName = recipe.recipeName;
@@ -39,18 +42,21 @@ public class DeliveryManager : MonoBehaviour {
                 var endRecipe = _levelRecipesSortedByIngredientName[Random.Range(0, _levelRecipesSortedByIngredientName.Count)];
                 //var endRecipe = levelRecipeList.endRecipesList[Random.Range(0, levelRecipeList.endRecipesList.Count)];
                 _waitingOrders.Add(endRecipe);
-                Debug.Log($"Generated {endRecipe.recipeName}");
+                NewOrderArrived?.Invoke(endRecipe);
             }
         }
+    }
+
+    public List<EndRecipeScriptable> GetWaitingOrders() {
+        return _waitingOrders;
     }
 
     public void DeliverPlate(PlateKitchenObject plate) {
         //match plate ingredients to waiting recipes
         if (TryFulfillWaitingRecipe(out var waitingRecipeIndex, plate.IngredientsList)) {
             Debug.Log($"Order fulfilled [{waitingRecipeIndex}] {_waitingOrders[waitingRecipeIndex].name}");
+            OrderFulfilled?.Invoke(_waitingOrders[waitingRecipeIndex]);
             _waitingOrders.RemoveAt(waitingRecipeIndex);
-        } else {
-            Debug.Log("No recipe fulfilled!!");            
         }
     }
 
