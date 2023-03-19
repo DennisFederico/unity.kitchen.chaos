@@ -105,10 +105,12 @@ namespace Player {
         }
     
         private void GameInputOnInteractAction() {
+            if (!GameManager.Instance.IsGamePlaying()) return;
             if (_selectedCounter != null) _selectedCounter.Interact(this);
         }
     
         private void GameInputOnInteractAlternateAction() {
+            if (!GameManager.Instance.IsGamePlaying()) return;
             if (_selectedCounter != null) _selectedCounter.InteractAlternate(this);
         }
     

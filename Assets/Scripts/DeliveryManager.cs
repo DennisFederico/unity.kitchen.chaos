@@ -15,7 +15,7 @@ public class DeliveryManager : MonoBehaviour {
     public event EventHandler FailedOrder;
     
     [SerializeField] private EndRecipeListScriptable levelRecipeList;
-
+    private int _successfulRecipes;
     private List<EndRecipeScriptable> _waitingOrders;
     private List<EndRecipeScriptable> _levelRecipesSortedByIngredientName;
     private float _recipeSpawnTimer;
@@ -38,6 +38,7 @@ public class DeliveryManager : MonoBehaviour {
     }
 
     private void Update() {
+        if (!GameManager.Instance.IsGamePlaying()) return;
         _recipeSpawnTimer += Time.deltaTime;
         if (_recipeSpawnTimer > _recipeSpawnTimerMax) {
             _recipeSpawnTimer = 0;
@@ -59,7 +60,8 @@ public class DeliveryManager : MonoBehaviour {
         if (TryFulfillWaitingRecipe(out var waitingRecipeIndex, plate.IngredientsList)) {
             OrderFulfilled?.Invoke(_waitingOrders[waitingRecipeIndex]);
             SuccessfulOrder?.Invoke(counter, EventArgs.Empty);
-            Debug.Log($"Order fulfilled {waitingRecipeIndex}");
+            _successfulRecipes++;
+            //Debug.Log($"Order fulfilled {waitingRecipeIndex}");
             _waitingOrders.RemoveAt(waitingRecipeIndex);
             return;
         }
@@ -87,5 +89,9 @@ public class DeliveryManager : MonoBehaviour {
         var list1 = orderIngredients;
         var list2 = plateIngredients.OrderBy(ingredient => ingredient.name).ToList();
         return !list1.Where((t, i) => t != list2[i]).Any();
+    }
+
+    public int GetSuccessfulRecipesAmount() {
+        return _successfulRecipes;
     }
 }
