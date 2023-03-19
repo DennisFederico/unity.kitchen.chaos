@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Counters;
 using KitchenObjects;
 using ScriptableObjects;
 using UnityEngine;
@@ -10,6 +11,8 @@ public class DeliveryManager : MonoBehaviour {
     public static DeliveryManager Instance { get; private set; }
     public Action<EndRecipeScriptable> NewOrderArrived;
     public Action<EndRecipeScriptable> OrderFulfilled;
+    public event EventHandler SuccessfulOrder;
+    public event EventHandler FailedOrder;
     
     [SerializeField] private EndRecipeListScriptable levelRecipeList;
 
@@ -51,13 +54,16 @@ public class DeliveryManager : MonoBehaviour {
         return _waitingOrders;
     }
 
-    public void DeliverPlate(PlateKitchenObject plate) {
+    public void DeliverPlate(DeliveryCounter counter, PlateKitchenObject plate) {
         //match plate ingredients to waiting recipes
         if (TryFulfillWaitingRecipe(out var waitingRecipeIndex, plate.IngredientsList)) {
-            Debug.Log($"Order fulfilled [{waitingRecipeIndex}] {_waitingOrders[waitingRecipeIndex].name}");
             OrderFulfilled?.Invoke(_waitingOrders[waitingRecipeIndex]);
+            SuccessfulOrder?.Invoke(counter, EventArgs.Empty);
+            Debug.Log($"Order fulfilled {waitingRecipeIndex}");
             _waitingOrders.RemoveAt(waitingRecipeIndex);
+            return;
         }
+        FailedOrder?.Invoke(counter, EventArgs.Empty);
     }
 
     private bool TryFulfillWaitingRecipe(out int recipeIndex, List<KitchenObjectScriptable> ingredients) {

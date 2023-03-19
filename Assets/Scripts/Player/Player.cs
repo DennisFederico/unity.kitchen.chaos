@@ -11,8 +11,9 @@ namespace Player {
         }
     
         public static Player Instance { get; private set; }
-    
+        
         public event Action<SelectedCounter> OnSelectedCounterChanged;
+        public event EventHandler PickedSomething;
     
         [SerializeField] private float moveSpeed = 7f;
         [SerializeField] private GameInput gameInput;
@@ -125,6 +126,9 @@ namespace Player {
 
         public void SetKitchenObject(KitchenObject kitchenObject) {
             _kitchenObject = kitchenObject;
+            if (kitchenObject) {
+                PickedSomething?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public void ClearKitchenObject() {

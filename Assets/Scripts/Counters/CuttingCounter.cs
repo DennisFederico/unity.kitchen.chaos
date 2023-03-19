@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace Counters {
     public class CuttingCounter : BaseCounter, IHasProgress {
-        
+
+        public static event EventHandler OnAnyCut;
         public event Action<float> OnProgressChange;
         public event Action OnCutAction; 
         [SerializeField] private CuttingRecipeScriptable[] cuttingRecipes;
@@ -36,6 +37,7 @@ namespace Counters {
             if (cuttingRecipes.TryGetCuttingRecipeWithInput(out var outputRecipe, kitchenObjectScriptableInput)) {
                 _cuttingProgress++;
                 OnCutAction?.Invoke();
+                OnAnyCut?.Invoke(this, EventArgs.Empty);
                 OnProgressChange?.Invoke((float) _cuttingProgress/outputRecipe.cuttingProgressMax);
                 if (_cuttingProgress >= outputRecipe.cuttingProgressMax) {
                     GetKitchenObject().DestroySelf();

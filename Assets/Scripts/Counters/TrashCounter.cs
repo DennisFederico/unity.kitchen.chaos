@@ -1,7 +1,10 @@
+using System;
 using KitchenObjects;
 
 namespace Counters {
     public class TrashCounter : BaseCounter {
+
+        public static event EventHandler ObjectTrashed;
         public override void Interact(Player.Player player) {
             if (!player.HasKitchenObject()) return;
             TrashKitchenObject(player.GetKitchenObject());
@@ -14,7 +17,7 @@ namespace Counters {
 
         private void TrashKitchenObject(KitchenObject kitchenObject) {
             kitchenObject.DestroySelf();
-            
+            ObjectTrashed?.Invoke(this, EventArgs.Empty);
         }
     }
 }

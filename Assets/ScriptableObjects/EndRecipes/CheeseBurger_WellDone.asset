@@ -15,5 +15,5 @@ MonoBehaviour:
   recipeName: Cheese Burger - Well Done
   ingredientsList:
   - {fileID: 11400000, guid: 492155b88a453456ea41054c251b0931, type: 2}
-  - {fileID: 11400000, guid: 51062588c98024afcade267f3c6ecd7d, type: 2}
+  - {fileID: 11400000, guid: 790a5f40989da40e588b54a3f897a8c0, type: 2}
   - {fileID: 11400000, guid: 2a29cc62d6a144f7a9dea009cd45c58b, type: 2}
