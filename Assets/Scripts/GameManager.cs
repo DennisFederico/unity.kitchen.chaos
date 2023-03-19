@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour {
 
     public event EventHandler GameStateChanged;
 
+    [SerializeField] private float roundDuration = 90f;
+
     private enum GameState {
         WaitingToStart,
         StartCountDown,
@@ -17,7 +19,7 @@ public class GameManager : MonoBehaviour {
     private GameState _gameState;
     private float _waitingToStartTimer = 2f;
     private float _countDownTimer = 3f;
-    private float _gamePlayTimer = 90f;
+    private float _gamePlayTimeLeft;
 
     private void Awake() {
         Instance = this;
@@ -38,12 +40,13 @@ public class GameManager : MonoBehaviour {
                 _countDownTimer -= Time.deltaTime;
                 if (_countDownTimer < 0f) {
                     _gameState = GameState.GamePlaying;
+                    _gamePlayTimeLeft = roundDuration;
                     GameStateChanged?.Invoke(this, EventArgs.Empty);
                 }
                 break;
             case GameState.GamePlaying:
-                _gamePlayTimer -= Time.deltaTime;
-                if (_gamePlayTimer < 0f) {
+                _gamePlayTimeLeft -= Time.deltaTime;
+                if (_gamePlayTimeLeft < 0f) {
                     _gameState = GameState.GameOver;
                     GameStateChanged?.Invoke(this, EventArgs.Empty);
                 }
@@ -72,6 +75,10 @@ public class GameManager : MonoBehaviour {
     }
 
     public float GetPlayTimeLeft() {
-        return _gamePlayTimer;
+        return _gamePlayTimeLeft;
+    }
+
+    public float GetPlayTimeLeftNormalized() {
+        return 1 - (_gamePlayTimeLeft / roundDuration);
     }
 }
