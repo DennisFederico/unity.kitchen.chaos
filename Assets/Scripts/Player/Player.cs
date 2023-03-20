@@ -54,16 +54,17 @@ namespace Player {
             var moveDistance = moveSpeed * Time.deltaTime;
         
             float playerRadius = .65f;
+            float moveDeadZone = .4f;
             //DebugExtension.DebugCapsule(transform.position + (transform.forward * moveDistance), (transform.position + (Vector3.up * 2)) + (transform.forward * moveDistance), Color.magenta, playerRadius);
             bool collided = Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveDirection, moveDistance);
             if (collided) {
                 //Try move X and Z independently
                 var moveX = new Vector3(moveDirection.x, 0, 0).normalized;
                 var moveZ = new Vector3(0, 0, moveDirection.z).normalized;
-                if (moveDirection.x != 0 && !Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveX, moveDistance)) {
+                if (Mathf.Abs(moveDirection.x) >= moveDeadZone && !Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveX, moveDistance)) {
                     moveDirection = moveX;
                     collided = false;
-                } else if (moveDirection.z != 0 && !Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveZ, moveDistance)) {
+                } else if (Mathf.Abs(moveDirection.z) >= moveDeadZone && !Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveZ, moveDistance)) {
                     moveDirection = moveZ;
                     collided = false;
                 }

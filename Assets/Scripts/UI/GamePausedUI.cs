@@ -13,7 +13,8 @@ namespace UI {
                 GameManager.Instance.TogglePauseGame();
             });
             optionsButton.onClick.AddListener(() => {
-                GameOptionsUI.Instance.Show();
+                Hide();
+                GameOptionsUI.Instance.Show(Show);
             });
             mainMenuButton.onClick.AddListener(() => {
                 Loader.Load(Loader.Scene.MainMenu);
@@ -28,6 +29,7 @@ namespace UI {
 
         private void Show() {
             gamePausedUI.SetActive(true);
+            resumeButton.Select();
         }
         
         private void Hide() {

@@ -32,7 +32,8 @@ namespace UI {
         [SerializeField] private Button pauseButton;
         [SerializeField] private TextMeshProUGUI pauseText;
         [SerializeField] private GameObject pressToRebindMsgModal;
-        
+
+        private Action _onCloseButtonAction;
         private void Awake() {
             Instance = this;
             musicVolumeButton.onClick.AddListener(() => {
@@ -45,6 +46,7 @@ namespace UI {
             });
             closeButton.onClick.AddListener(() => {
                 Hide();
+                _onCloseButtonAction();
             });
             
             moveUpButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.MoveUp));
@@ -63,9 +65,11 @@ namespace UI {
             Hide();
         }
 
-        public void Show() {
+        public void Show(Action onClose) {
+            _onCloseButtonAction = onClose;
             UpdateVisuals();
             gameOptionsUI.SetActive(true);
+            closeButton.Select();
         }
 
         public void Hide() {
