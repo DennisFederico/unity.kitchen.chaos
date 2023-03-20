@@ -1,11 +1,13 @@
 using System;
+using Player;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace UI {
     public class GameOptionsUI : MonoBehaviour {
-        
+
         public static GameOptionsUI Instance { get; private set; }
         
         [SerializeField] private GameObject gameOptionsUI;
@@ -15,6 +17,22 @@ namespace UI {
         [SerializeField] private TextMeshProUGUI musicVolumeText;
         [SerializeField] private TextMeshProUGUI soundFxVolumeText;
 
+        [SerializeField] private Button moveUpButton;
+        [SerializeField] private TextMeshProUGUI moveUpText;
+        [SerializeField] private Button moveDownButton;
+        [SerializeField] private TextMeshProUGUI moveDownText;
+        [SerializeField] private Button moveLeftButton;
+        [SerializeField] private TextMeshProUGUI moveLeftText;
+        [SerializeField] private Button moveRightButton;
+        [SerializeField] private TextMeshProUGUI moveRightText;
+        [SerializeField] private Button interactButton;
+        [SerializeField] private TextMeshProUGUI interactText;
+        [FormerlySerializedAs("interactAlt")] [SerializeField] private Button interactAltButton;
+        [SerializeField] private TextMeshProUGUI interactAltText;
+        [SerializeField] private Button pauseButton;
+        [SerializeField] private TextMeshProUGUI pauseText;
+        [SerializeField] private GameObject pressToRebindMsgModal;
+        
         private void Awake() {
             Instance = this;
             musicVolumeButton.onClick.AddListener(() => {
@@ -28,10 +46,20 @@ namespace UI {
             closeButton.onClick.AddListener(() => {
                 Hide();
             });
+            
+            moveUpButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.MoveUp));
+            moveDownButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.MoveDown));
+            moveLeftButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.MoveLeft));
+            moveRightButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.MoveRight));
+            interactButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.Interact));
+            interactAltButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.InteractAlternate));
+            pauseButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.Pause));
+            
         }
 
         private void Start() {
             GameManager.Instance.OnGameUnPaused += GameManagerOnGameUnPaused;
+            HideRebindMsg();
             Hide();
         }
 
@@ -51,6 +79,28 @@ namespace UI {
         private void UpdateVisuals() {
             musicVolumeText.text = $"Music Volume: {Math.Round(MusicManager.Instance.GetVolume() * 10f)}";
             soundFxVolumeText.text = $"SoundFx Volume: {Math.Round(AudioManager.Instance.GetVolume() * 10f)}";
+
+            moveUpText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveUp);
+            moveDownText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveDown);
+            moveLeftText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveLeft);
+            moveRightText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveRight);
+            interactText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Interact);
+            interactAltText.text = GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlternate);
+            pauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Pause);
+        }
+        
+        private void ShowRebindMsg() {
+            pressToRebindMsgModal.SetActive(true);
+        }
+
+        private void HideRebindMsg() {
+            UpdateVisuals();
+            pressToRebindMsgModal.SetActive(false);
+        }
+
+        private void RebindBinding(GameInput.Binding binding) {
+            ShowRebindMsg();
+            GameInput.Instance.RebindBinding(binding, HideRebindMsg);
         }
     }
 }
