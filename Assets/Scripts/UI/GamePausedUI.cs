@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace UI {
     public class GamePausedUI : MonoBehaviour {
-
+        [SerializeField] private GameObject gamePausedUI;
         [SerializeField] private Button resumeButton;
         [SerializeField] private Button mainMenuButton;
 
@@ -24,11 +24,11 @@ namespace UI {
         }
 
         private void Show() {
-            gameObject.SetActive(true);
+            gamePausedUI.SetActive(true);
         }
         
         private void Hide() {
-            gameObject.SetActive(false);
+            gamePausedUI.SetActive(false);
         }
     }
 }

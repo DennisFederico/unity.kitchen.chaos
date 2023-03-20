@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace UI {
     public class GameOverUI : MonoBehaviour {
+        [SerializeField] private GameObject gameOverUI;
         [SerializeField] private TextMeshProUGUI recipesDeliveredText;
         
         private void Start() {
@@ -21,11 +22,11 @@ namespace UI {
         }
 
         private void Hide() {
-            gameObject.gameObject.SetActive(false);
+            gameOverUI.SetActive(false);
         }
 
         private void Show() {
-            gameObject.gameObject.SetActive(true);
+            gameOverUI.SetActive(true);
         }
     }
 }
