@@ -54,7 +54,7 @@ namespace UI {
             moveLeftButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.MoveLeft));
             moveRightButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.MoveRight));
             interactButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.Interact));
-            interactAltButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.InteractAlternate));
+            interactAltButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.InteractAlt));
             pauseButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.Pause));
             
         }
@@ -89,7 +89,7 @@ namespace UI {
             moveLeftText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveLeft);
             moveRightText.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveRight);
             interactText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Interact);
-            interactAltText.text = GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlternate);
+            interactAltText.text = GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlt);
             pauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Pause);
         }
         

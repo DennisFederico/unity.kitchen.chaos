@@ -10,6 +10,7 @@ namespace Player {
         public event Action OnInteractAction;
         public event Action OnInteractAlternateAction;
         public event Action OnPauseAction;
+        public event Action OnBindingRebind;
 
         public enum Binding {
             MoveUp,
@@ -17,8 +18,11 @@ namespace Player {
             MoveLeft,
             MoveRight,
             Interact,
-            InteractAlternate,
+            InteractAlt,
             Pause,
+            GamePadInteract,
+            GamePadInteractAlt,
+            GamePadPause,
         }
 
         private PlayerInputActions _playerInputActions;
@@ -69,7 +73,7 @@ namespace Player {
                 default:
                 case Binding.Interact:
                     return _playerInputActions.Player.Interact.bindings[0].ToDisplayString();
-                case Binding.InteractAlternate:
+                case Binding.InteractAlt:
                     return _playerInputActions.Player.InteractAlternate.bindings[0].ToDisplayString();
                 case Binding.Pause:
                     return _playerInputActions.Player.Pause.bindings[0].ToDisplayString();
@@ -81,6 +85,12 @@ namespace Player {
                     return _playerInputActions.Player.Move.bindings[3].ToDisplayString();
                 case Binding.MoveRight:
                     return _playerInputActions.Player.Move.bindings[4].ToDisplayString();
+                case Binding.GamePadInteract:
+                    return _playerInputActions.Player.Interact.bindings[1].ToDisplayString();
+                case Binding.GamePadInteractAlt:
+                    return _playerInputActions.Player.InteractAlternate.bindings[1].ToDisplayString();
+                case Binding.GamePadPause:
+                    return _playerInputActions.Player.Pause.bindings[1].ToDisplayString();
             }
         }
 
@@ -95,13 +105,25 @@ namespace Player {
                     inputAction = _playerInputActions.Player.Interact;
                     bindingIndex = 0;
                     break;
-                case Binding.InteractAlternate:
+                case Binding.InteractAlt:
                     inputAction = _playerInputActions.Player.InteractAlternate;
                     bindingIndex = 0;
                     break;
                 case Binding.Pause:
                     inputAction = _playerInputActions.Player.Pause;
                     bindingIndex = 0;
+                    break;
+                case Binding.GamePadInteract:
+                    inputAction = _playerInputActions.Player.Interact;
+                    bindingIndex = 1;
+                    break;
+                case Binding.GamePadInteractAlt:
+                    inputAction = _playerInputActions.Player.InteractAlternate;
+                    bindingIndex = 1;
+                    break;
+                case Binding.GamePadPause:
+                    inputAction = _playerInputActions.Player.Pause;
+                    bindingIndex = 1;
                     break;
                 case Binding.MoveUp:
                     inputAction = _playerInputActions.Player.Move;
@@ -131,6 +153,8 @@ namespace Player {
                     var bindigsOverride = _playerInputActions.SaveBindingOverridesAsJson();
                     PlayerPrefs.SetString(ConstPlayerPrefsBindings, bindigsOverride);
                     PlayerPrefs.Save();
+                    
+                    OnBindingRebind?.Invoke();
                 }).Start();
         }
     }

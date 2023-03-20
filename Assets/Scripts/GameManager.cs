@@ -31,22 +31,30 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Start() {
-        GameInput.Instance.OnPauseAction += GameInputOnOnPauseAction;
+        GameInput.Instance.OnPauseAction += GameInputOnPauseAction;
+        GameInput.Instance.OnInteractAction += GameInputOnInteractAction;
     }
 
-    private void GameInputOnOnPauseAction() {
+    private void GameInputOnInteractAction() {
+        if (_gameState == GameState.WaitingToStart) {
+            _gameState = GameState.StartCountDown;
+            GameStateChanged?.Invoke(this, EventArgs.Empty);
+            GameInput.Instance.OnInteractAction -= GameInputOnInteractAction;
+        }
+    }
+
+    private void GameInputOnPauseAction() {
         TogglePauseGame();
     }
 
     private void Update() {
         switch (_gameState) {
             case GameState.WaitingToStart:
-                _waitingToStartTimer -= Time.deltaTime;
-                if (_waitingToStartTimer < 0f) {
-                    _gameState = GameState.StartCountDown;
-                    GameStateChanged?.Invoke(this, EventArgs.Empty);
-                }
-
+                // _waitingToStartTimer -= Time.deltaTime;
+                // if (_waitingToStartTimer < 0f) {
+                //     _gameState = GameState.StartCountDown;
+                //     GameStateChanged?.Invoke(this, EventArgs.Empty);
+                // }
                 break;
             case GameState.StartCountDown:
                 _countDownTimer -= Time.deltaTime;

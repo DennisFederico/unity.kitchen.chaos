@@ -15,6 +15,7 @@ namespace Counters {
         private int _spawnedPlatesMaxAmount = 4;
 
         private void Update() {
+            if (!GameManager.Instance.IsGamePlaying()) return;
             _spawnPlateTimer += Time.deltaTime;
             if (_spawnPlateTimer > _spawnPlateTimerMax) {
                 _spawnPlateTimer = 0f;
