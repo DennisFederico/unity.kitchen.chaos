@@ -5,6 +5,9 @@ namespace Counters {
     public class TrashCounter : BaseCounter {
 
         public static event EventHandler ObjectTrashed;
+        public new static void ResetStaticEventHandler() {
+            ObjectTrashed = null;
+        }
         public override void Interact(Player.Player player) {
             if (!player.HasKitchenObject()) return;
             TrashKitchenObject(player.GetKitchenObject());

@@ -1,10 +1,13 @@
 using System;
+using Player;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour {
     public static GameManager Instance { private set; get; }
 
     public event EventHandler GameStateChanged;
+    public event Action OnGamePaused;
+    public event Action OnGameUnPaused;
 
     [SerializeField] private float roundDuration = 90f;
 
@@ -20,10 +23,19 @@ public class GameManager : MonoBehaviour {
     private float _waitingToStartTimer = 2f;
     private float _countDownTimer = 3f;
     private float _gamePlayTimeLeft;
+    private bool _gamePaused;
 
     private void Awake() {
         Instance = this;
         _gameState = GameState.WaitingToStart;
+    }
+
+    private void Start() {
+        GameInput.Instance.OnPauseAction += GameInputOnOnPauseAction;
+    }
+
+    private void GameInputOnOnPauseAction() {
+        TogglePauseGame();
     }
 
     private void Update() {
@@ -55,6 +67,17 @@ public class GameManager : MonoBehaviour {
                 break;
             case GameState.GameOver:
                 break;
+        }
+    }
+
+    public void TogglePauseGame() {
+        _gamePaused = !_gamePaused;
+        if (_gamePaused) {
+            Time.timeScale = 0f;
+            OnGamePaused?.Invoke();
+        } else {
+            Time.timeScale = 1f;
+            OnGameUnPaused?.Invoke();
         }
     }
 

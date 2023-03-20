@@ -7,6 +7,9 @@ namespace Counters {
     public class CuttingCounter : BaseCounter, IHasProgress {
 
         public static event EventHandler OnAnyCut;
+        public new static void ResetStaticEventHandler() {
+            OnAnyCut = null;
+        }
         public event Action<float> OnProgressChange;
         public event Action OnCutAction; 
         [SerializeField] private CuttingRecipeScriptable[] cuttingRecipes;
