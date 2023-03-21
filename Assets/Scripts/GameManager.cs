@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour {
     }
 
     private GameState _gameState;
-    private float _waitingToStartTimer = 2f;
+    // private float _waitingToStartTimer = 2f;
     private float _countDownTimer = 3f;
     private float _gamePlayTimeLeft;
     private bool _gamePaused;

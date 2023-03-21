@@ -1,14 +1,20 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace UI {
     public class GameOverUI : MonoBehaviour {
         [SerializeField] private GameObject gameOverUI;
         [SerializeField] private TextMeshProUGUI recipesDeliveredText;
+        [SerializeField] private Button retryButton;
 
         private void Start() {
             GameManager.Instance.GameStateChanged += GameManagerOnGameStateChanged;
+            retryButton.onClick.AddListener(() => {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            });
             Hide();
         }
 
@@ -27,6 +33,7 @@ namespace UI {
 
         private void Show() {
             gameOverUI.SetActive(true);
+            retryButton.Select();
         }
     }
 }

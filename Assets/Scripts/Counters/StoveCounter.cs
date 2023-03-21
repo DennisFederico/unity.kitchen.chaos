@@ -8,12 +8,11 @@ namespace Counters {
         
         public event Action<float> OnProgressChange;
         public event Action<bool> StoveOnOffChanged;
-        private bool _isTurnedOn = false;
+        private bool _isTurnedOn;
         [SerializeField] private FryingRecipeScriptable[] fryingRecipes;
         [SerializeField] private KitchenObjectScriptable cookedReference;
         private float _currentFryingTime;
         private FryingRecipeScriptable _currentFryingRecipe;
-        private bool _cooked;
         
         private void Update() {
             if (!HasKitchenObject() || !_isTurnedOn || !_currentFryingRecipe) return;
@@ -23,7 +22,6 @@ namespace Counters {
                 GetKitchenObject().DestroySelf();
                 KitchenObject.SpawnKitchenObject(_currentFryingRecipe.output, this);
                 if (fryingRecipes.TryGetCuttingRecipeWithInput(out _currentFryingRecipe, _currentFryingRecipe.output)) {
-                    _cooked = true;
                     _currentFryingTime = 0;
                     OnProgressChange?.Invoke(0.01f);
                 } else {
@@ -38,7 +36,6 @@ namespace Counters {
                     player.GetKitchenObject().SetKitchenObjectParent(this);
                     _currentFryingRecipe = fryingRecipe;
                     _currentFryingTime = 0;
-                    _cooked = false;
                     _isTurnedOn = true;
                     StoveOnOffChanged?.Invoke(true);
                     OnProgressChange?.Invoke(_currentFryingTime/_currentFryingRecipe.maxFryingTime);
