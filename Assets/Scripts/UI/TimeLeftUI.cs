@@ -12,12 +12,12 @@ namespace UI {
             GameManager.Instance.GameStateChanged += GameManagerOnGameStateChanged;
             Hide();
         }
-        
+
         private void Update() {
             if (!_playing) return;
             timerImage.fillAmount = GameManager.Instance.GetPlayTimeLeftNormalized();
         }
-        
+
         private void GameManagerOnGameStateChanged(object sender, EventArgs e) {
             _playing = GameManager.Instance.IsGamePlaying();
             if (_playing) Show();

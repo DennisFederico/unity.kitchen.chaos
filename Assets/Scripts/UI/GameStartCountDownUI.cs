@@ -8,7 +8,7 @@ namespace UI {
         private Animator _animator;
         private int _previousCount;
         private bool _countdown;
-        private int _numberPopupAnimationTrigger = Animator.StringToHash("NumberPopup");
+        private readonly int _numberPopupAnimationTrigger = Animator.StringToHash("NumberPopup");
 
         private void Awake() {
             _animator = GetComponent<Animator>();

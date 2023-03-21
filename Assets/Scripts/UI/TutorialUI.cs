@@ -43,7 +43,7 @@ namespace UI {
             keyInteract.text = GameInput.Instance.GetBindingText(GameInput.Binding.Interact);
             keyInteractAlt.text = GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlt);
             keyPause.text = GameInput.Instance.GetBindingText(GameInput.Binding.Pause);
-            
+
             keyGamePadInteract.text = GameInput.Instance.GetBindingText(GameInput.Binding.MoveRight);
             keyGamePadInteractAlt.text = GameInput.Instance.GetBindingText(GameInput.Binding.Interact);
             keyGamePadPause.text = GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlt);

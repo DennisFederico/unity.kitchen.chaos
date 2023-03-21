@@ -3,11 +3,10 @@ using UnityEngine.UI;
 
 namespace UI {
     public class ProgressBarUI : MonoBehaviour {
-    
         [SerializeField] private GameObject hasProgressCounterGameObject;
         [SerializeField] private Image barImage;
         private IHasProgress _hasProgressCounter;
-    
+
         private void Start() {
             _hasProgressCounter = hasProgressCounterGameObject.GetComponent<IHasProgress>();
             //On Null pointer exception the GameObject does not implement IHasProgress

@@ -7,9 +7,8 @@ using UnityEngine.UI;
 
 namespace UI {
     public class GameOptionsUI : MonoBehaviour {
-
         public static GameOptionsUI Instance { get; private set; }
-        
+
         [SerializeField] private GameObject gameOptionsUI;
         [SerializeField] private Button musicVolumeButton;
         [SerializeField] private Button soundFxVolumeButton;
@@ -27,13 +26,17 @@ namespace UI {
         [SerializeField] private TextMeshProUGUI moveRightText;
         [SerializeField] private Button interactButton;
         [SerializeField] private TextMeshProUGUI interactText;
-        [FormerlySerializedAs("interactAlt")] [SerializeField] private Button interactAltButton;
+
+        [FormerlySerializedAs("interactAlt")] [SerializeField]
+        private Button interactAltButton;
+
         [SerializeField] private TextMeshProUGUI interactAltText;
         [SerializeField] private Button pauseButton;
         [SerializeField] private TextMeshProUGUI pauseText;
         [SerializeField] private GameObject pressToRebindMsgModal;
 
         private Action _onCloseButtonAction;
+
         private void Awake() {
             Instance = this;
             musicVolumeButton.onClick.AddListener(() => {
@@ -48,7 +51,7 @@ namespace UI {
                 Hide();
                 _onCloseButtonAction();
             });
-            
+
             moveUpButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.MoveUp));
             moveDownButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.MoveDown));
             moveLeftButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.MoveLeft));
@@ -56,7 +59,6 @@ namespace UI {
             interactButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.Interact));
             interactAltButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.InteractAlt));
             pauseButton.onClick.AddListener(() => RebindBinding(GameInput.Binding.Pause));
-            
         }
 
         private void Start() {
@@ -75,7 +77,7 @@ namespace UI {
         public void Hide() {
             gameOptionsUI.SetActive(false);
         }
-        
+
         private void GameManagerOnGameUnPaused() {
             Hide();
         }
@@ -92,7 +94,7 @@ namespace UI {
             interactAltText.text = GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlt);
             pauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Pause);
         }
-        
+
         private void ShowRebindMsg() {
             pressToRebindMsgModal.SetActive(true);
         }

@@ -24,6 +24,7 @@ namespace UI {
             foreach (Transform child in ordersContainer.transform) {
                 Destroy(child.gameObject);
             }
+
             foreach (var order in orders) {
                 var orderVisual = Instantiate(orderTemplate, ordersContainer);
                 orderVisual.SetRecipeData(order);

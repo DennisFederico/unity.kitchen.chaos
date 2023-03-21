@@ -6,7 +6,7 @@ namespace UI {
     public class GameOverUI : MonoBehaviour {
         [SerializeField] private GameObject gameOverUI;
         [SerializeField] private TextMeshProUGUI recipesDeliveredText;
-        
+
         private void Start() {
             GameManager.Instance.GameStateChanged += GameManagerOnGameStateChanged;
             Hide();

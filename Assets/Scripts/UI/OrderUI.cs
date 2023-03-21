@@ -7,7 +7,7 @@ namespace UI {
         [SerializeField] private TextMeshProUGUI recipeName;
         [SerializeField] private Transform ingredientsContainer;
         [SerializeField] private PlateIconSingleUI iconTemplate;
-        
+
 
         public void SetRecipeData(EndRecipeScriptable recipe) {
             recipeName.text = recipe.recipeName;

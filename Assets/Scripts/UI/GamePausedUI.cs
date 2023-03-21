@@ -9,16 +9,12 @@ namespace UI {
         [SerializeField] private Button mainMenuButton;
 
         private void Awake() {
-            resumeButton.onClick.AddListener(() => {
-                GameManager.Instance.TogglePauseGame();
-            });
+            resumeButton.onClick.AddListener(() => { GameManager.Instance.TogglePauseGame(); });
             optionsButton.onClick.AddListener(() => {
                 Hide();
                 GameOptionsUI.Instance.Show(Show);
             });
-            mainMenuButton.onClick.AddListener(() => {
-                Loader.Load(Loader.Scene.MainMenu);
-            });
+            mainMenuButton.onClick.AddListener(() => { Loader.Load(Loader.Scene.MainMenu); });
         }
 
         private void Start() {
@@ -31,7 +27,7 @@ namespace UI {
             gamePausedUI.SetActive(true);
             resumeButton.Select();
         }
-        
+
         private void Hide() {
             gamePausedUI.SetActive(false);
         }

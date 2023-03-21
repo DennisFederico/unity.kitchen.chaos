@@ -35,6 +35,10 @@ public class AudioManager : MonoBehaviour {
         PlayRandomSound(audioClipReferences.warning, Vector3.zero);
     }
     
+    public void PlayStoveWarningSound(Vector3 position) {
+        PlayRandomSound(audioClipReferences.warning, position);
+    }
+    
     private void TrashCounterOnObjectTrashed(object sender, EventArgs e) {
         var counter = (BaseCounter) sender;
         PlayRandomSound(audioClipReferences.trashObject, counter.transform.position);
