@@ -397,6 +397,77 @@ PrefabInstance:
       objectReference: {fileID: 7796312094983922736}
     - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
         type: 3}
+      propertyPath: scriptableToVisualList.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
+      propertyPath: scriptableToVisualList.Array.data[0].key
+      value: 
+      objectReference: {fileID: 11400000, guid: 492155b88a453456ea41054c251b0931,
+        type: 2}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
+      propertyPath: scriptableToVisualList.Array.data[1].key
+      value: 
+      objectReference: {fileID: 11400000, guid: 51062588c98024afcade267f3c6ecd7d,
+        type: 2}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
+      propertyPath: scriptableToVisualList.Array.data[2].key
+      value: 
+      objectReference: {fileID: 11400000, guid: 790a5f40989da40e588b54a3f897a8c0,
+        type: 2}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
+      propertyPath: scriptableToVisualList.Array.data[3].key
+      value: 
+      objectReference: {fileID: 11400000, guid: 92618e5b139384503820aa12f1071438,
+        type: 2}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
+      propertyPath: scriptableToVisualList.Array.data[4].key
+      value: 
+      objectReference: {fileID: 11400000, guid: 2a29cc62d6a144f7a9dea009cd45c58b,
+        type: 2}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
+      propertyPath: scriptableToVisualList.Array.data[5].key
+      value: 
+      objectReference: {fileID: 11400000, guid: 5b234c84587154a0086d7204d4615005,
+        type: 2}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
+      propertyPath: scriptableToVisualList.Array.data[0].value
+      value: 
+      objectReference: {fileID: 6186615842408816744}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
+      propertyPath: scriptableToVisualList.Array.data[1].value
+      value: 
+      objectReference: {fileID: 6186615842164058278}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
+      propertyPath: scriptableToVisualList.Array.data[2].value
+      value: 
+      objectReference: {fileID: 6233039016331384570}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
+      propertyPath: scriptableToVisualList.Array.data[3].value
+      value: 
+      objectReference: {fileID: 6186615843063403376}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
+      propertyPath: scriptableToVisualList.Array.data[4].value
+      value: 
+      objectReference: {fileID: 6186615843091109028}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
+      propertyPath: scriptableToVisualList.Array.data[5].value
+      value: 
+      objectReference: {fileID: 6186615842142535402}
+    - target: {fileID: 8379724265705581225, guid: 10e39c981f2de6441b54efde32ced8f0,
+        type: 3}
       propertyPath: kitchenObjectScriptableVisualMap._serializedList.Array.size
       value: 6
       objectReference: {fileID: 0}
