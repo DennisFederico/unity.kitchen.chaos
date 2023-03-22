@@ -47,68 +47,68 @@ jobs:
       # Output
       - uses: actions/upload-artifact@v3
         with:
-          name: HelloWorld-${{ matrix.targetPlatform }}
+          name: KitchenChaos-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
 
-  build-WebGL:
-    name: Build for WebGL ✨
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        targetPlatform:
-          - WebGL
+  # build-WebGL:
+  #   name: Build for WebGL ✨
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       targetPlatform:
+  #         - WebGL
 
-    steps:
-      # Checkout
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          lfs: true
+  #   steps:
+  #     # Checkout
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+  #       with:
+  #         lfs: true
 
-      # Cache
-      - uses: actions/cache@v3
-        with:
-          path: Library
-          key: Library-${{ matrix.targetPlatform }}
-          restore-keys: |
-            Library-
+  #     # Cache
+  #     - uses: actions/cache@v3
+  #       with:
+  #         path: Library
+  #         key: Library-${{ matrix.targetPlatform }}
+  #         restore-keys: |
+  #           Library-
 
-      # Build
-      - name: Build project
-        uses: game-ci/unity-builder@v2
-        env:
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          targetPlatform: ${{ matrix.targetPlatform }}
+  #     # Build
+  #     - name: Build project
+  #       uses: game-ci/unity-builder@v2
+  #       env:
+  #         UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  #         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  #       with:
+  #         targetPlatform: ${{ matrix.targetPlatform }}
 
-      # Output
-      - uses: actions/upload-artifact@v3
-        with:
-          name: HelloWorld-${{ matrix.targetPlatform }}
-          path: build/${{ matrix.targetPlatform }}
+  #     # Output
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: KitchenChaos-${{ matrix.targetPlatform }}
+  #         path: build/${{ matrix.targetPlatform }}
 
-  deployToPages:
-    needs: build-WebGL
-    name: Deploy to Github Pages
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  # deployToPages:
+  #   needs: build-WebGL
+  #   name: Deploy to Github Pages
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - uses: actions/download-artifact@v3
-        with:
-          name: HelloWorld-WebGL
-          path: build/WebGL
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: KitchenChaos-WebGL
+  #         path: build/WebGL
 
-      - name: Display structure of root files
-        run: ls -R
-        #working-directory: build/WebGL
+  #     - name: Display structure of root files
+  #       run: ls -R
+  #       #working-directory: build/WebGL
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages
-          folder: build/WebGL/WebGL
-          target-folder: .
+  #     - name: Deploy
+  #       uses: JamesIves/github-pages-deploy-action@v4
+  #       with:
+  #         branch: gh-pages
+  #         folder: build/WebGL/WebGL
+  #         target-folder: .
