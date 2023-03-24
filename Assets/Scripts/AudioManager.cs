@@ -19,7 +19,7 @@ public class AudioManager : MonoBehaviour {
     }
 
     private void Start() {
-        Player.Player.Instance.PickedSomething += PlayerOnPickedSomething;
+        //Player.Player.Instance.PickedSomething += PlayerOnPickedSomething;
         BaseCounter.AnyItemPlaced += BaseCounterOnAnyItemPlaced;
         DeliveryManager.Instance.FailedOrder += DeliveryManagerOnFailedOrder;
         DeliveryManager.Instance.SuccessfulOrder += DeliveryManagerOnSuccessfulOrder;

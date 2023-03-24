@@ -4,10 +4,11 @@ using System.Linq;
 using Counters;
 using KitchenObjects;
 using ScriptableObjects;
+using Unity.Netcode;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class DeliveryManager : MonoBehaviour {
+public class DeliveryManager : NetworkBehaviour {
     public static DeliveryManager Instance { get; private set; }
     public Action<EndRecipeScriptable> NewOrderArrived;
     public Action<EndRecipeScriptable> OrderFulfilled;
@@ -38,17 +39,25 @@ public class DeliveryManager : MonoBehaviour {
     }
 
     private void Update() {
+        if (!IsServer) return;
         if (!GameManager.Instance.IsGamePlaying()) return;
         _recipeSpawnTimer += Time.deltaTime;
         if (_recipeSpawnTimer > _recipeSpawnTimerMax) {
             _recipeSpawnTimer = 0;
             if (_waitingOrders.Count <= _waitingRecipesMax) {
-                var endRecipe = _levelRecipesSortedByIngredientName[Random.Range(0, _levelRecipesSortedByIngredientName.Count)];
+                var endRecipeIndex = Random.Range(0, _levelRecipesSortedByIngredientName.Count);
+                SpawnNewWaitingRecipeClientRpc(endRecipeIndex);
                 //var endRecipe = levelRecipeList.endRecipesList[Random.Range(0, levelRecipeList.endRecipesList.Count)];
-                _waitingOrders.Add(endRecipe);
-                NewOrderArrived?.Invoke(endRecipe);
             }
         }
+    }
+
+    //SEND THE RECIPE INDEX AS IT IS EASIER THAT SERIALIZING THE WHOLE THING
+    [ClientRpc]
+    private void SpawnNewWaitingRecipeClientRpc(int endRecipeIndex) {
+        EndRecipeScriptable endRecipe = _levelRecipesSortedByIngredientName[endRecipeIndex];
+        _waitingOrders.Add(endRecipe);
+        NewOrderArrived?.Invoke(endRecipe);
     }
 
     public List<EndRecipeScriptable> GetWaitingOrders() {

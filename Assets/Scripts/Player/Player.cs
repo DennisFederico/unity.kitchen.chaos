@@ -1,22 +1,22 @@
 using System;
 using Counters;
 using KitchenObjects;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Player {
-    public class Player : MonoBehaviour, IKitchenObjectParent {
+    public class Player : NetworkBehaviour, IKitchenObjectParent {
 
         public class SelectedCounter {
             public BaseCounter BaseCounter;
         }
     
-        public static Player Instance { get; private set; }
+        //public static Player Instance { get; private set; }
         
         public event Action<SelectedCounter> OnSelectedCounterChanged;
         public event EventHandler PickedSomething;
     
         [SerializeField] private float moveSpeed = 7f;
-        [SerializeField] private GameInput gameInput;
         [SerializeField] private LayerMask countersLayerMask;
         [SerializeField] private Transform kitchenObjectParentPoint;
 
@@ -25,31 +25,28 @@ namespace Player {
         private KitchenObject _kitchenObject;
         private BaseCounter _selectedCounter;
 
-        private void Awake() {
-            if (Instance != null) {
-                Debug.Log("There is more than one player instance");
-                Destroy(gameObject);
-            }
-            Instance = this;
-        }
+        // private void Awake() {
+        //     //Instance = this;
+        // }
 
         private void OnEnable() {
-            gameInput.OnInteractAction += GameInputOnInteractAction;
-            gameInput.OnInteractAlternateAction += GameInputOnInteractAlternateAction;
+            GameInput.Instance.OnInteractAction += GameInputOnInteractAction;
+            GameInput.Instance.OnInteractAlternateAction += GameInputOnInteractAlternateAction;
         }
 
         private void OnDisable() {
-            gameInput.OnInteractAction -= GameInputOnInteractAction;
-            gameInput.OnInteractAlternateAction -= GameInputOnInteractAlternateAction;
+            GameInput.Instance.OnInteractAction -= GameInputOnInteractAction;
+            GameInput.Instance.OnInteractAlternateAction -= GameInputOnInteractAlternateAction;
         }
 
         private void Update() {
+            if (!IsOwner) return;
             HandleMovement();
             HandleSelectCounter();
         }
 
         private void HandleMovement() {
-            var inputVector = gameInput.GetMovementNormalizedVector();
+            var inputVector = GameInput.Instance.GetMovementNormalizedVector();
             var moveDirection= new Vector3(inputVector.x, 0f, inputVector.y);
             var moveDistance = moveSpeed * Time.deltaTime;
         
@@ -77,7 +74,7 @@ namespace Player {
         }
 
         private void HandleSelectCounter() {
-            var inputVector = gameInput.GetMovementNormalizedVector();
+            var inputVector = GameInput.Instance.GetMovementNormalizedVector();
             var  moveDirection= new Vector3(inputVector.x, 0f, inputVector.y);
             float interactionDistance = 2f;
 

@@ -21,7 +21,11 @@ namespace UI {
             GameInput.Instance.OnBindingRebind += GameInputOnBindingRebind;
             GameManager.Instance.GameStateChanged += GameManageOnGameStateChanged;
             UpdateVisuals();
-            Show();
+            if (GameManager.Instance.IsWaitingToStart()) {
+                Show();                
+            } else {
+                Hide();
+            }
         }
 
         private void GameManageOnGameStateChanged(object sender, EventArgs e) {

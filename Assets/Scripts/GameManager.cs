@@ -10,7 +10,9 @@ public class GameManager : MonoBehaviour {
     public event Action OnGameUnPaused;
 
     [SerializeField] private float roundDuration = 90f;
-
+    [SerializeField] private float countDown = 1f;
+    [SerializeField] private GameState startState = GameState.StartCountDown;
+    
     private enum GameState {
         WaitingToStart,
         StartCountDown,
@@ -27,7 +29,10 @@ public class GameManager : MonoBehaviour {
 
     private void Awake() {
         Instance = this;
-        _gameState = GameState.WaitingToStart;
+        //Overrides for Editor
+        _gameState = startState;
+        _countDownTimer = countDown;
+        //_gameState = GameState.WaitingToStart;
     }
 
     private void Start() {
@@ -89,6 +94,9 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    public bool IsWaitingToStart() {
+        return _gameState == GameState.WaitingToStart;
+    }
     public bool IsGamePlaying() {
         return _gameState == GameState.GamePlaying;
     }
