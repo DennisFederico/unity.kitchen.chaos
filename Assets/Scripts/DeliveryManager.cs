@@ -10,8 +10,8 @@ using Random = UnityEngine.Random;
 
 public class DeliveryManager : NetworkBehaviour {
     public static DeliveryManager Instance { get; private set; }
-    public Action<EndRecipeScriptable> NewOrderArrived;
-    public Action<EndRecipeScriptable> OrderFulfilled;
+    public Action<EndRecipeScriptable> newOrderArrived;
+    public Action<EndRecipeScriptable> orderFulfilled;
     public event EventHandler SuccessfulOrder;
     public event EventHandler FailedOrder;
     
@@ -57,24 +57,20 @@ public class DeliveryManager : NetworkBehaviour {
     private void SpawnNewWaitingRecipeClientRpc(int endRecipeIndex) {
         EndRecipeScriptable endRecipe = _levelRecipesSortedByIngredientName[endRecipeIndex];
         _waitingOrders.Add(endRecipe);
-        NewOrderArrived?.Invoke(endRecipe);
+        newOrderArrived?.Invoke(endRecipe);
     }
 
     public List<EndRecipeScriptable> GetWaitingOrders() {
         return _waitingOrders;
     }
-
+    
     public void DeliverPlate(DeliveryCounter counter, PlateKitchenObject plate) {
         //match plate ingredients to waiting recipes
         if (TryFulfillWaitingRecipe(out var waitingRecipeIndex, plate.IngredientsList)) {
-            OrderFulfilled?.Invoke(_waitingOrders[waitingRecipeIndex]);
-            SuccessfulOrder?.Invoke(counter, EventArgs.Empty);
-            _successfulRecipes++;
-            //Debug.Log($"Order fulfilled {waitingRecipeIndex}");
-            _waitingOrders.RemoveAt(waitingRecipeIndex);
+            DeliverCorrectRecipeServerRpc(waitingRecipeIndex);
             return;
         }
-        FailedOrder?.Invoke(counter, EventArgs.Empty);
+        DeliverIncorrectRecipeServerRpc(); 
     }
 
     private bool TryFulfillWaitingRecipe(out int recipeIndex, List<KitchenObjectScriptable> ingredients) {
@@ -86,9 +82,6 @@ public class DeliveryManager : NetworkBehaviour {
         recipeIndex = -1;
         return false;
     }
-    
-    // private readonly Comparison<KitchenObjectScriptable> _ingredientNameComparison =
-    //     (ingredient1, ingredient2) => String.Compare(ingredient1.name, ingredient2.name, StringComparison.Ordinal);
 
     //This comparison would allow duplicate ingredients
     private bool CompareIngredientLists(List<KitchenObjectScriptable> plateIngredients, List<KitchenObjectScriptable> orderIngredients) {
@@ -98,6 +91,33 @@ public class DeliveryManager : NetworkBehaviour {
         var list1 = orderIngredients;
         var list2 = plateIngredients.OrderBy(ingredient => ingredient.name).ToList();
         return !list1.Where((t, i) => t != list2[i]).Any();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void DeliverIncorrectRecipeServerRpc() {
+        DeliverIncorrectRecipeClientRpc();
+    }
+
+    //TODO SHOULD USE THE COUNTER GAMEOBJECT ID 
+    [ClientRpc]
+    private void DeliverIncorrectRecipeClientRpc() {
+        // FailedOrder?.Invoke(counter, EventArgs.Empty);
+        FailedOrder?.Invoke(this, EventArgs.Empty);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void DeliverCorrectRecipeServerRpc(int waitingRecipeIndex) {
+        DeliverCorrectRecipeClientRpc(waitingRecipeIndex);
+    }
+
+    [ClientRpc]
+    private void DeliverCorrectRecipeClientRpc(int waitingRecipeIndex) {
+        //Here is the actual behavior when a correct recipe is delivered (by any player)
+        _successfulRecipes++;
+        _waitingOrders.RemoveAt(waitingRecipeIndex);
+        orderFulfilled?.Invoke(_waitingOrders[waitingRecipeIndex]);
+        //TODO... here we need the GameObjectId of the counter
+        SuccessfulOrder?.Invoke(this, EventArgs.Empty);
     }
 
     public int GetSuccessfulRecipesAmount() {

@@ -19,7 +19,7 @@ public class AudioManager : MonoBehaviour {
     }
 
     private void Start() {
-        //Player.Player.Instance.PickedSomething += PlayerOnPickedSomething;
+        Player.Player.anyonePickedSomething += PlayerOnPickedSomething;
         BaseCounter.AnyItemPlaced += BaseCounterOnAnyItemPlaced;
         DeliveryManager.Instance.FailedOrder += DeliveryManagerOnFailedOrder;
         DeliveryManager.Instance.SuccessfulOrder += DeliveryManagerOnSuccessfulOrder;
@@ -59,14 +59,18 @@ public class AudioManager : MonoBehaviour {
         PlayRandomSound(audioClipReferences.chop, counter.transform.position);
     }
 
+    //TODO NEEDS A HOLD OF THE COUNTER
     private void DeliveryManagerOnSuccessfulOrder(object sender, EventArgs e) {
-        var counter = (BaseCounter) sender;
-        PlayRandomSound(audioClipReferences.deliverySuccess, counter.transform.position);
+        //var counter = (BaseCounter) sender;
+        // PlayRandomSound(audioClipReferences.deliverySuccess, counter.transform.position);
+        PlayRandomSound(audioClipReferences.deliverySuccess, Camera.main.transform.position);
     }
 
+    //TODO NEEDS A HOLD OF THE COUNTER
     private void DeliveryManagerOnFailedOrder(object sender, EventArgs e) {
-        var counter = (BaseCounter) sender;
-        PlayRandomSound(audioClipReferences.deliveryFail, counter.transform.position);
+        //var counter = (BaseCounter) sender;
+        // PlayRandomSound(audioClipReferences.deliveryFail, counter.transform.position);
+        PlayRandomSound(audioClipReferences.deliveryFail, Camera.main.transform.position);
     }
 
     private void PlayRandomSound(IReadOnlyList<AudioClip> audioClipArray, Vector3 position, float volume = 1f) {

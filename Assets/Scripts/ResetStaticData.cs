@@ -6,5 +6,6 @@ public class ResetStaticData : MonoBehaviour {
         BaseCounter.ResetStaticEventHandler();
         CuttingCounter.ResetStaticEventHandler();
         TrashCounter.ResetStaticEventHandler();
+        Player.Player.ResetStaticEventHandler();
     }
 }

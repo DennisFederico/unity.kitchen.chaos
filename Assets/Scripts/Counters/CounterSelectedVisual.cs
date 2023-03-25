@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Counters {
@@ -7,21 +8,26 @@ namespace Counters {
         [SerializeField] private GameObject[] selectedVisualArray;
 
         private void Start() {
-            //Player.Player.Instance.OnSelectedCounterChanged += PlayerOnSelectedCounterChanged;
+            if (Player.Player.LocalInstance != null) {
+                Player.Player.LocalInstance.OnSelectedCounterChanged += PlayerOnSelectedCounterChanged;                
+            } else {
+                Player.Player.localPlayerSpawned += AnyPlayerSpawned;
+            }  
+            
         }
-    
-        // private void OnEnable() {
-        //     Player.Instance.OnSelectedCounterChanged += PlayerOnOnSelectedCounterChanged;
-        // }
 
-        // private void OnDisable() {
-        //     Player.Instance.OnSelectedCounterChanged -= PlayerOnOnSelectedCounterChanged;
-        // }
-
+        private void AnyPlayerSpawned(object sender, EventArgs e) {
+            if (Player.Player.LocalInstance != null) {
+                Player.Player.LocalInstance.OnSelectedCounterChanged += PlayerOnSelectedCounterChanged;                
+            }
+        }
+        
         private void PlayerOnSelectedCounterChanged(Player.Player.SelectedCounter counterSelectedChange) {
-            if (baseCounter == counterSelectedChange.BaseCounter) {
+            if (baseCounter == counterSelectedChange.baseCounter) {
                 Selected();
             } else {
+                //THIS COULD BE OPTIMIZED BY CHECKING IF IT WAS SELECTED FIRST
+                //OR SENDING NEW AND PREVIOUS SELECTION ON THE EVENT
                 UnSelected();
             }
         }

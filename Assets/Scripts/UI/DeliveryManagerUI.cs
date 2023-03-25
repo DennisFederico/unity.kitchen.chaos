@@ -7,8 +7,8 @@ namespace UI {
         [SerializeField] private OrderUI orderTemplate;
 
         private void Start() {
-            DeliveryManager.Instance.NewOrderArrived += DeliveryManagerOnNewOrderArrived;
-            DeliveryManager.Instance.OrderFulfilled += DeliveryManagerOnOrderFulfilled;
+            DeliveryManager.Instance.newOrderArrived += DeliveryManagerOnNewOrderArrived;
+            DeliveryManager.Instance.orderFulfilled += DeliveryManagerOnOrderFulfilled;
         }
 
         private void DeliveryManagerOnOrderFulfilled(EndRecipeScriptable recipe) {

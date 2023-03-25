@@ -8,10 +8,17 @@ namespace Player {
     public class Player : NetworkBehaviour, IKitchenObjectParent {
 
         public class SelectedCounter {
-            public BaseCounter BaseCounter;
+            public BaseCounter baseCounter;
+        }
+
+        public static EventHandler localPlayerSpawned;
+        public static EventHandler anyonePickedSomething;
+        public static void ResetStaticEventHandler() {
+            localPlayerSpawned = null;
+            anyonePickedSomething = null;
         }
     
-        //public static Player Instance { get; private set; }
+        public static Player LocalInstance { get; private set; }
         
         public event Action<SelectedCounter> OnSelectedCounterChanged;
         public event EventHandler PickedSomething;
@@ -25,9 +32,11 @@ namespace Player {
         private KitchenObject _kitchenObject;
         private BaseCounter _selectedCounter;
 
-        // private void Awake() {
-        //     //Instance = this;
-        // }
+        public override void OnNetworkSpawn() {
+            if (!IsOwner) return;
+            LocalInstance = this;
+            localPlayerSpawned?.Invoke(this, EventArgs.Empty);
+        }
 
         private void OnEnable() {
             GameInput.Instance.OnInteractAction += GameInputOnInteractAction;
@@ -97,7 +106,7 @@ namespace Player {
             if (_selectedCounter != selectedCounter) {
                 _selectedCounter = selectedCounter;
                 OnSelectedCounterChanged?.Invoke(new SelectedCounter() {
-                    BaseCounter = selectedCounter
+                    baseCounter = selectedCounter
                 });
             }
         }
@@ -128,6 +137,7 @@ namespace Player {
             _kitchenObject = kitchenObject;
             if (kitchenObject) {
                 PickedSomething?.Invoke(this, EventArgs.Empty);
+                anyonePickedSomething?.Invoke(this, EventArgs.Empty);
             }
         }
 
