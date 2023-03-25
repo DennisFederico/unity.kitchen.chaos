@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5492163094238323056}
   - component: {fileID: -5330610780626149936}
+  - component: {fileID: -6915691757614528328}
+  - component: {fileID: -7720206655904027907}
   m_Layer: 0
   m_Name: Bread
   m_TagString: Untagged
@@ -47,6 +49,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <KitchenObjectScriptable>k__BackingField: {fileID: 11400000, guid: 492155b88a453456ea41054c251b0931,
     type: 2}
+--- !u!114 &-6915691757614528328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2296758179447413635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+--- !u!114 &-7720206655904027907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2296758179447413635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d55fc1f2a44f4137948455fa795e9463, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1903572585076557777
 PrefabInstance:
   m_ObjectHideFlags: 0

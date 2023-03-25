@@ -11,7 +11,8 @@ namespace KitchenObjects {
         [SerializeField] private List<KitchenObjectScriptable> validIngredientsScriptables;
         private List<KitchenObjectScriptable> _ingredientsList;
 
-        private void Awake() {
+        protected override void Awake() {
+            base.Awake();
             _ingredientsList = new List<KitchenObjectScriptable>();
         }
 

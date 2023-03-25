@@ -1,6 +1,7 @@
 using System;
 using KitchenObjects;
 using ScriptableObjects;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Counters {
@@ -9,19 +10,30 @@ namespace Counters {
         public event Action OnGrabObjectFromContainer;
         [SerializeField] private KitchenObjectScriptable kitchenObjectScriptable;
 
+        public Sprite GetContainerSprite() {
+            return kitchenObjectScriptable.sprite;
+        }
+        
         public override void Interact(Player.Player player) {
             if (!player.HasKitchenObject()) {
                 KitchenObject.SpawnKitchenObject(kitchenObjectScriptable, player);
-                OnGrabObjectFromContainer?.Invoke();
+                InteractLogicServerRpc();
             } else if (player.GetKitchenObject().TryGetAsPlate(out var plateKitchenObject)) {
                 if (plateKitchenObject.TryAddIngredient(kitchenObjectScriptable)) {
-                    OnGrabObjectFromContainer?.Invoke();
+                    InteractLogicServerRpc();
                 }
             }
         }
 
-        public Sprite GetContainerSprite() {
-            return kitchenObjectScriptable.sprite;
+        [ServerRpc(RequireOwnership = false)]
+        private void InteractLogicServerRpc() {
+            InteractLogicClientRpc();
         }
+
+        [ClientRpc]
+        private void InteractLogicClientRpc() {
+            OnGrabObjectFromContainer?.Invoke();
+        }
+        
     }
 }

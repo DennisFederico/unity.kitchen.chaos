@@ -148,5 +148,9 @@ namespace Player {
         public bool HasKitchenObject() {
             return _kitchenObject != null;
         }
+
+        public NetworkObject GetNetworkObject() {
+            return NetworkObject;
+        }
     }
 }

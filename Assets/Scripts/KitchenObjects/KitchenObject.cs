@@ -1,23 +1,38 @@
+using System;
 using ScriptableObjects;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace KitchenObjects {
-    public class KitchenObject : MonoBehaviour {
+    public class KitchenObject : NetworkBehaviour {
         [field: SerializeField] public KitchenObjectScriptable KitchenObjectScriptable { private set; get; }
 
         private IKitchenObjectParent _kitchenObjectParent;
+        private FollowTransform _followTransform;
 
-        public static KitchenObject SpawnKitchenObject(KitchenObjectScriptable kitchenObjectScriptable, IKitchenObjectParent kitchenObjectParent) {
-            var kitchenObjectInstance = Instantiate(kitchenObjectScriptable.prefab);
-            var kitchenObject = kitchenObjectInstance.GetComponent<KitchenObject>();
-            kitchenObject.SetKitchenObjectParent(kitchenObjectParent);
-            return kitchenObject;
+        protected virtual void Awake() {
+            _followTransform = GetComponent<FollowTransform>();
+        }
+
+        public static void SpawnKitchenObject(KitchenObjectScriptable kitchenObjectScriptable, IKitchenObjectParent kitchenObjectParent) {
+            GameManagerMultiplayer.Instance.SpawnKitchenObject(kitchenObjectScriptable, kitchenObjectParent);
         }
     
         public void SetKitchenObjectParent(IKitchenObjectParent kitchenObjectParent) {
-            if (_kitchenObjectParent != null) {
-                _kitchenObjectParent.ClearKitchenObject();
-            }
+            SetKitchenObjectParentServerRpc(kitchenObjectParent.GetNetworkObject());
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void SetKitchenObjectParentServerRpc(NetworkObjectReference kitchenObjectParentNetworkReference) {
+            SetKitchenObjectParentClientRpc(kitchenObjectParentNetworkReference);
+        }
+        
+        [ClientRpc]
+        private void SetKitchenObjectParentClientRpc(NetworkObjectReference kitchenObjectParentNetworkReference) {
+            kitchenObjectParentNetworkReference.TryGet(out NetworkObject kitchenObjectParentNetworkObject);
+            var kitchenObjectParent = kitchenObjectParentNetworkObject.GetComponent<IKitchenObjectParent>();
+
+            _kitchenObjectParent?.ClearKitchenObject();
 
             if (kitchenObjectParent.HasKitchenObject()) {
                 Debug.Log($"ERROR IKitchenObjectParent {kitchenObjectParent} already has a KitchenObject. Cannot set {this}");
@@ -25,10 +40,10 @@ namespace KitchenObjects {
             _kitchenObjectParent = kitchenObjectParent;
             _kitchenObjectParent.SetKitchenObject(this);
         
-            transform.parent = _kitchenObjectParent.GetKitchenObjectParentPoint();
-            transform.localPosition = Vector3.zero;
+            _followTransform.SetTargetTransform(_kitchenObjectParent.GetKitchenObjectParentPoint());
         }
-
+        
+        
         public bool TryGetAsPlate(out PlateKitchenObject plateKitchenObject) {
             if (this is PlateKitchenObject) {
                 plateKitchenObject = this as PlateKitchenObject;
