@@ -1,8 +1,6 @@
-using System;
 using KitchenObjects;
 using ScriptableObjects;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManagerMultiplayer : NetworkBehaviour {
@@ -13,6 +11,15 @@ public class GameManagerMultiplayer : NetworkBehaviour {
 
     private void Awake() {
         Instance = this;
+    }
+
+    public int GetKitchenObjectScriptableIndex(KitchenObjectScriptable kitchenObjectScriptable) {
+        var kitchenObjectScriptableIndex = kitchenObjectListScriptable.kitchenObjects.IndexOf(kitchenObjectScriptable);
+        return kitchenObjectScriptableIndex;
+    }
+
+    public KitchenObjectScriptable GetKitchenObjectScriptable(int index) {
+        return kitchenObjectListScriptable.kitchenObjects[index];
     }
     
     public void SpawnKitchenObject(KitchenObjectScriptable kitchenObjectScriptable, IKitchenObjectParent kitchenObjectParent) {

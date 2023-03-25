@@ -13,12 +13,10 @@ namespace Counters {
                     //If it is a plate, add the ingredient to the plate
                     if (playerPlate.TryAddIngredient(GetKitchenObject().KitchenObjectScriptable)) {
                         KitchenObject.DestroyKitchenObject(GetKitchenObject());
-                        //GetKitchenObject().DestroySelf();
                     }
                 } else if (GetKitchenObject().TryGetAsPlate(out var counterPlate)) {
                     if (counterPlate.TryAddIngredient(player.GetKitchenObject().KitchenObjectScriptable)) {
                         KitchenObject.DestroyKitchenObject(player.GetKitchenObject());
-                        //player.GetKitchenObject().DestroySelf();
                     }
                 }
             }

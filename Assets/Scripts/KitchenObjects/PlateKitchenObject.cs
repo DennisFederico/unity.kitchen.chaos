@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ScriptableObjects;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace KitchenObjects {
@@ -20,10 +21,21 @@ namespace KitchenObjects {
         public bool TryAddIngredient(KitchenObjectScriptable kitchenObjectScriptable) {
             if (!validIngredientsScriptables.Contains(kitchenObjectScriptable)) return false;
             if (_ingredientsList.Contains(kitchenObjectScriptable)) return false;
-            
+            var kitchenObjectScriptableIndex = GameManagerMultiplayer.Instance.GetKitchenObjectScriptableIndex(kitchenObjectScriptable);
+            AddIngredientServerRpc(kitchenObjectScriptableIndex);
+            return true;
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void AddIngredientServerRpc(int kitchenObjectScriptableIndex) {
+            AddIngredientClientRpc(kitchenObjectScriptableIndex);
+        }
+
+        [ClientRpc]
+        private void AddIngredientClientRpc(int kitchenObjectScriptableIndex) {
+            var kitchenObjectScriptable = GameManagerMultiplayer.Instance.GetKitchenObjectScriptable(kitchenObjectScriptableIndex);
             _ingredientsList.Add(kitchenObjectScriptable);
             AddedIngredient?.Invoke(kitchenObjectScriptable);
-            return true;
         }
 
         public List<KitchenObjectScriptable> IngredientsList {

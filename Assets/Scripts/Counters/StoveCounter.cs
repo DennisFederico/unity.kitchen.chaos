@@ -33,7 +33,7 @@ namespace Counters {
                 if (fryingRecipes.TryGetFryingRecipeWithInput(out _currentFryingRecipe, _currentFryingRecipe.output)) {
                     _currentFryingTime.Value = 0f;
                 } else {
-                    TurnOffStoveClientRpc();
+                    TurnOffStoveServerRpc();
                 }
             }
         }
@@ -47,11 +47,11 @@ namespace Counters {
             } else if (HasKitchenObject()) {
                 if (!player.HasKitchenObject()) {
                     GetKitchenObject().SetKitchenObjectParent(player);
-                    InteractLogicRemoveFromCounterServerRpc();
+                    TurnOffStoveServerRpc();
                 } else if (player.GetKitchenObject().TryGetAsPlate(out var plateKitchenObject)) {
                     if (plateKitchenObject.TryAddIngredient(GetKitchenObject().KitchenObjectScriptable)) {
+                        TurnOffStoveServerRpc();
                         KitchenObject.DestroyKitchenObject(GetKitchenObject());
-                        InteractLogicRemoveFromCounterServerRpc();
                     }
                 }
             }
@@ -67,11 +67,12 @@ namespace Counters {
         private void InteractLogicPlaceOnCounterClientRpc(int index) {
             _currentFryingRecipe = fryingRecipes[index];
             _isTurnedOn = true;
-            StoveOnOffChanged?.Invoke(true);
+            StoveOnOffChanged?.Invoke(_isTurnedOn);
         }
         
         [ServerRpc(RequireOwnership = false)]
-        private void InteractLogicRemoveFromCounterServerRpc() {
+        private void TurnOffStoveServerRpc() {
+            _currentFryingTime.Value = 0f;
             TurnOffStoveClientRpc();
         }
 
@@ -81,10 +82,9 @@ namespace Counters {
         }
         
         private void TurnOffStove() {
-            _isTurnedOn = false;
             _currentFryingRecipe = null;
-            StoveOnOffChanged?.Invoke(false);
-            OnProgressChange?.Invoke(0f);
+            _isTurnedOn = false;
+            StoveOnOffChanged?.Invoke(_isTurnedOn);
         }
 
         public bool IsCooked() {

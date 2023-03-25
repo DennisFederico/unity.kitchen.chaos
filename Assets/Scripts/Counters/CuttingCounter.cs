@@ -26,7 +26,6 @@ namespace Counters {
             } else if (HasKitchenObject()) {
                 if (!player.HasKitchenObject()) {
                     GetKitchenObject().SetKitchenObjectParent(player);
-                    // InteractLogicPlaceOnCounterServerRpc();
                 } else if (player.GetKitchenObject().TryGetAsPlate(out var plateKitchenObject)) {
                     if (plateKitchenObject.TryAddIngredient(GetKitchenObject().KitchenObjectScriptable)) {
                         KitchenObject.DestroyKitchenObject(GetKitchenObject());
@@ -71,10 +70,6 @@ namespace Counters {
                 OnCutAction?.Invoke();
                 OnAnyCut?.Invoke(this, EventArgs.Empty);
                 OnProgressChange?.Invoke((float) _cuttingProgress/outputRecipe.cuttingProgressMax);
-                // if (_cuttingProgress >= outputRecipe.cuttingProgressMax) {
-                //     KitchenObject.DestroyKitchenObject(GetKitchenObject());
-                //     KitchenObject.SpawnKitchenObject(outputRecipe.output, this);
-                // }
             }
         }
     }
