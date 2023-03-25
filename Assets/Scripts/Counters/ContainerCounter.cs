@@ -34,6 +34,5 @@ namespace Counters {
         private void InteractLogicClientRpc() {
             OnGrabObjectFromContainer?.Invoke();
         }
-        
     }
 }
