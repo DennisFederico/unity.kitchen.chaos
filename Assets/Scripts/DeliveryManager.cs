@@ -10,8 +10,8 @@ using Random = UnityEngine.Random;
 
 public class DeliveryManager : NetworkBehaviour {
     public static DeliveryManager Instance { get; private set; }
-    public Action<EndRecipeScriptable> newOrderArrived;
-    public Action<EndRecipeScriptable> orderFulfilled;
+    public Action newOrderArrived;
+    public Action orderFulfilled;
     public event EventHandler SuccessfulOrder;
     public event EventHandler FailedOrder;
     
@@ -57,7 +57,7 @@ public class DeliveryManager : NetworkBehaviour {
     private void SpawnNewWaitingRecipeClientRpc(int endRecipeIndex) {
         EndRecipeScriptable endRecipe = _levelRecipesSortedByIngredientName[endRecipeIndex];
         _waitingOrders.Add(endRecipe);
-        newOrderArrived?.Invoke(endRecipe);
+        newOrderArrived?.Invoke();
     }
 
     public List<EndRecipeScriptable> GetWaitingOrders() {
@@ -68,9 +68,9 @@ public class DeliveryManager : NetworkBehaviour {
         //match plate ingredients to waiting recipes
         if (TryFulfillWaitingRecipe(out var waitingRecipeIndex, plate.IngredientsList)) {
             DeliverCorrectRecipeServerRpc(waitingRecipeIndex);
-            return;
+        } else {
+            DeliverIncorrectRecipeServerRpc();
         }
-        DeliverIncorrectRecipeServerRpc(); 
     }
 
     private bool TryFulfillWaitingRecipe(out int recipeIndex, List<KitchenObjectScriptable> ingredients) {
@@ -114,8 +114,8 @@ public class DeliveryManager : NetworkBehaviour {
     private void DeliverCorrectRecipeClientRpc(int waitingRecipeIndex) {
         //Here is the actual behavior when a correct recipe is delivered (by any player)
         _successfulRecipes++;
+        orderFulfilled?.Invoke();
         _waitingOrders.RemoveAt(waitingRecipeIndex);
-        orderFulfilled?.Invoke(_waitingOrders[waitingRecipeIndex]);
         //TODO... here we need the GameObjectId of the counter
         SuccessfulOrder?.Invoke(this, EventArgs.Empty);
     }

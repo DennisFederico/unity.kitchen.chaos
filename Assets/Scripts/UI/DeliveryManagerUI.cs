@@ -11,11 +11,11 @@ namespace UI {
             DeliveryManager.Instance.orderFulfilled += DeliveryManagerOnOrderFulfilled;
         }
 
-        private void DeliveryManagerOnOrderFulfilled(EndRecipeScriptable recipe) {
+        private void DeliveryManagerOnOrderFulfilled() {
             UpdateOrdersListVisual();
         }
 
-        private void DeliveryManagerOnNewOrderArrived(EndRecipeScriptable recipe) {
+        private void DeliveryManagerOnNewOrderArrived() {
             UpdateOrdersListVisual();
         }
 

@@ -1,6 +1,7 @@
 using System;
 using KitchenObjects;
 using ScriptableObjects;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Counters {
@@ -18,36 +19,62 @@ namespace Counters {
         public override void Interact(Player.Player player) {
             if (!HasKitchenObject() && player.HasKitchenObject()) {
                 if (cuttingRecipes.TryGetCuttingRecipeWithInput(out var outputRecipe, player.GetKitchenObject().KitchenObjectScriptable)) {
-                    player.GetKitchenObject().SetKitchenObjectParent(this);
-                    _cuttingProgress = 0;
-                    OnProgressChange?.Invoke((float)_cuttingProgress/outputRecipe.cuttingProgressMax);
+                    KitchenObject kitchenObject = player.GetKitchenObject();
+                    kitchenObject.SetKitchenObjectParent(this);
+                    InteractLogicPlaceOnCounterServerRpc();
                 }
             } else if (HasKitchenObject()) {
                 if (!player.HasKitchenObject()) {
                     GetKitchenObject().SetKitchenObjectParent(player);
-                    OnProgressChange?.Invoke(0f);
+                    // InteractLogicPlaceOnCounterServerRpc();
                 } else if (player.GetKitchenObject().TryGetAsPlate(out var plateKitchenObject)) {
                     if (plateKitchenObject.TryAddIngredient(GetKitchenObject().KitchenObjectScriptable)) {
                         KitchenObject.DestroyKitchenObject(GetKitchenObject());
-                        //GetKitchenObject().DestroySelf();
                     }
                 }
             }
         }
+        
+        [ServerRpc(RequireOwnership = false)]
+        private void InteractLogicPlaceOnCounterServerRpc() {
+            InteractLogicPlaceOnCounterClientRpc();
+        }
+
+        [ClientRpc]
+        private void InteractLogicPlaceOnCounterClientRpc() {
+            _cuttingProgress = 0;
+            OnProgressChange?.Invoke(0f);
+        }
 
         public override void InteractAlternate(Player.Player player) {
             if (!HasKitchenObject()) return;
+            CutKitchenObjectServerRpc();
+        }
+        
+        [ServerRpc(RequireOwnership = false)]
+        private void CutKitchenObjectServerRpc() {
+            var kitchenObjectScriptableInput = GetKitchenObject().KitchenObjectScriptable;
+            if (cuttingRecipes.TryGetCuttingRecipeWithInput(out var outputRecipe, kitchenObjectScriptableInput)) {
+                CutKitchenObjectClientRpc();
+                if (_cuttingProgress >= outputRecipe.cuttingProgressMax) {
+                    KitchenObject.DestroyKitchenObject(GetKitchenObject());
+                    KitchenObject.SpawnKitchenObject(outputRecipe.output, this);
+                }
+            }
+        }
+
+        [ClientRpc]
+        private void CutKitchenObjectClientRpc() {
             var kitchenObjectScriptableInput = GetKitchenObject().KitchenObjectScriptable;
             if (cuttingRecipes.TryGetCuttingRecipeWithInput(out var outputRecipe, kitchenObjectScriptableInput)) {
                 _cuttingProgress++;
                 OnCutAction?.Invoke();
                 OnAnyCut?.Invoke(this, EventArgs.Empty);
                 OnProgressChange?.Invoke((float) _cuttingProgress/outputRecipe.cuttingProgressMax);
-                if (_cuttingProgress >= outputRecipe.cuttingProgressMax) {
-                    KitchenObject.DestroyKitchenObject(GetKitchenObject());
-                    //GetKitchenObject().DestroySelf();
-                    KitchenObject.SpawnKitchenObject(outputRecipe.output, this);
-                }
+                // if (_cuttingProgress >= outputRecipe.cuttingProgressMax) {
+                //     KitchenObject.DestroyKitchenObject(GetKitchenObject());
+                //     KitchenObject.SpawnKitchenObject(outputRecipe.output, this);
+                // }
             }
         }
     }
