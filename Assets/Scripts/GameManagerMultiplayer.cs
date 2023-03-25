@@ -31,4 +31,24 @@ public class GameManagerMultiplayer : NetworkBehaviour {
         var kitchenObject = kitchenObjectInstance.GetComponent<KitchenObject>();
         kitchenObject.SetKitchenObjectParent(kitchenObjectParent);
     }
+
+    public void DestroyKitchenObject(KitchenObject kitchenObject) {
+        DestroyKitchenObjectServerRpc(kitchenObject.NetworkObject);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void DestroyKitchenObjectServerRpc(NetworkObjectReference kitchenObjectNetworkReference) {
+        kitchenObjectNetworkReference.TryGet(out NetworkObject kitchenObjectNetworkObject);
+        var kitchenObject = kitchenObjectNetworkObject.GetComponent<KitchenObject>();
+        ClearKitchenObjectFromParentClientRpc(kitchenObjectNetworkReference);
+        kitchenObject.DestroySelf();
+    }
+
+    [ClientRpc]
+    private void ClearKitchenObjectFromParentClientRpc(NetworkObjectReference kitchenObjectNetworkReference) {
+        kitchenObjectNetworkReference.TryGet(out NetworkObject kitchenObjectNetworkObject);
+        var kitchenObject = kitchenObjectNetworkObject.GetComponent<KitchenObject>();
+        kitchenObject.ClearKitchenObjectFromParent();
+    }
+    
 }

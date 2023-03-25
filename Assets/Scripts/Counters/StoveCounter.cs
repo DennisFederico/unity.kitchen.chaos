@@ -19,7 +19,8 @@ namespace Counters {
             _currentFryingTime += Time.deltaTime;
             OnProgressChange?.Invoke(_currentFryingTime/_currentFryingRecipe.maxFryingTime);
             if (_currentFryingTime > _currentFryingRecipe.maxFryingTime) {
-                GetKitchenObject().DestroySelf();
+                KitchenObject.DestroyKitchenObject(GetKitchenObject());
+                //GetKitchenObject().DestroySelf();
                 KitchenObject.SpawnKitchenObject(_currentFryingRecipe.output, this);
                 if (fryingRecipes.TryGetCuttingRecipeWithInput(out _currentFryingRecipe, _currentFryingRecipe.output)) {
                     _currentFryingTime = 0;
@@ -46,7 +47,8 @@ namespace Counters {
                     TurnOffStove();
                 } else if (player.GetKitchenObject().TryGetAsPlate(out var plateKitchenObject)) {
                     if (plateKitchenObject.TryAddIngredient(GetKitchenObject().KitchenObjectScriptable)) {
-                        GetKitchenObject().DestroySelf();
+                        KitchenObject.DestroyKitchenObject(GetKitchenObject());
+                        //GetKitchenObject().DestroySelf();
                         TurnOffStove();
                     }
                 }

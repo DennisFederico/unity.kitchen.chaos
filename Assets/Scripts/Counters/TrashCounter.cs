@@ -1,5 +1,6 @@
 using System;
 using KitchenObjects;
+using Unity.Netcode;
 
 namespace Counters {
     public class TrashCounter : BaseCounter {
@@ -19,7 +20,17 @@ namespace Counters {
         }
 
         private void TrashKitchenObject(KitchenObject kitchenObject) {
-            kitchenObject.DestroySelf();
+            KitchenObject.DestroyKitchenObject(kitchenObject);
+            InteractLogicServerRpc();
+        }
+        
+        [ServerRpc(RequireOwnership = false)]
+        private void InteractLogicServerRpc() {
+            InteractLogicClientRpc();
+        }
+
+        [ClientRpc]
+        private void InteractLogicClientRpc() {
             ObjectTrashed?.Invoke(this, EventArgs.Empty);
         }
     }

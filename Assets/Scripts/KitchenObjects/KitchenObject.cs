@@ -17,6 +17,10 @@ namespace KitchenObjects {
         public static void SpawnKitchenObject(KitchenObjectScriptable kitchenObjectScriptable, IKitchenObjectParent kitchenObjectParent) {
             GameManagerMultiplayer.Instance.SpawnKitchenObject(kitchenObjectScriptable, kitchenObjectParent);
         }
+
+        public static void DestroyKitchenObject(KitchenObject kitchenObject) {
+            GameManagerMultiplayer.Instance.DestroyKitchenObject(kitchenObject);
+        }
     
         public void SetKitchenObjectParent(IKitchenObjectParent kitchenObjectParent) {
             SetKitchenObjectParentServerRpc(kitchenObjectParent.GetNetworkObject());
@@ -43,7 +47,6 @@ namespace KitchenObjects {
             _followTransform.SetTargetTransform(_kitchenObjectParent.GetKitchenObjectParentPoint());
         }
         
-        
         public bool TryGetAsPlate(out PlateKitchenObject plateKitchenObject) {
             if (this is PlateKitchenObject) {
                 plateKitchenObject = this as PlateKitchenObject;
@@ -58,8 +61,12 @@ namespace KitchenObjects {
         }
 
         public void DestroySelf() {
-            _kitchenObjectParent.ClearKitchenObject();
             Destroy(gameObject);
         }
+
+        public void ClearKitchenObjectFromParent() {
+            _kitchenObjectParent.ClearKitchenObject();
+        }
+        
     }
 }
