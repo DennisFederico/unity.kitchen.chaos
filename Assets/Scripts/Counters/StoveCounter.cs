@@ -1,6 +1,7 @@
 using System;
 using KitchenObjects;
 using ScriptableObjects;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Counters {
@@ -22,7 +23,7 @@ namespace Counters {
                 KitchenObject.DestroyKitchenObject(GetKitchenObject());
                 //GetKitchenObject().DestroySelf();
                 KitchenObject.SpawnKitchenObject(_currentFryingRecipe.output, this);
-                if (fryingRecipes.TryGetCuttingRecipeWithInput(out _currentFryingRecipe, _currentFryingRecipe.output)) {
+                if (fryingRecipes.TryGetFryingRecipeWithInput(out _currentFryingRecipe, _currentFryingRecipe.output)) {
                     _currentFryingTime = 0;
                     OnProgressChange?.Invoke(0.01f);
                 } else {
@@ -33,26 +34,45 @@ namespace Counters {
 
         public override void Interact(Player.Player player) {
             if (!HasKitchenObject() && player.HasKitchenObject()) {
-                if (fryingRecipes.TryGetCuttingRecipeWithInput(out var fryingRecipe, player.GetKitchenObject().KitchenObjectScriptable)) {
+                if (fryingRecipes.TryGetFryingRecipeIndexWithInput(out var index, player.GetKitchenObject().KitchenObjectScriptable)) {
                     player.GetKitchenObject().SetKitchenObjectParent(this);
-                    _currentFryingRecipe = fryingRecipe;
-                    _currentFryingTime = 0;
-                    _isTurnedOn = true;
-                    StoveOnOffChanged?.Invoke(true);
-                    OnProgressChange?.Invoke(_currentFryingTime/_currentFryingRecipe.maxFryingTime);
+                    InteractLogicPlaceOnCounterServerRpc(index);
                 }
             } else if (HasKitchenObject()) {
                 if (!player.HasKitchenObject()) {
                     GetKitchenObject().SetKitchenObjectParent(player);
-                    TurnOffStove();
+                    InteractLogicRemoveFromCounterServerRpc();
                 } else if (player.GetKitchenObject().TryGetAsPlate(out var plateKitchenObject)) {
                     if (plateKitchenObject.TryAddIngredient(GetKitchenObject().KitchenObjectScriptable)) {
                         KitchenObject.DestroyKitchenObject(GetKitchenObject());
-                        //GetKitchenObject().DestroySelf();
-                        TurnOffStove();
+                        InteractLogicRemoveFromCounterServerRpc();
                     }
                 }
             }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void InteractLogicPlaceOnCounterServerRpc(int index) {
+            InteractLogicPlaceOnCounterClientRpc(index);
+        }
+
+        [ClientRpc]
+        private void InteractLogicPlaceOnCounterClientRpc(int index) {
+            _currentFryingRecipe = fryingRecipes[index];
+            _currentFryingTime = 0;
+            _isTurnedOn = true;
+            StoveOnOffChanged?.Invoke(true);
+            OnProgressChange?.Invoke(_currentFryingTime/_currentFryingRecipe.maxFryingTime);
+        }
+        
+        [ServerRpc(RequireOwnership = false)]
+        private void InteractLogicRemoveFromCounterServerRpc() {
+            InteractLogicRemoveFromCounterClientRpc();
+        }
+
+        [ClientRpc]
+        private void InteractLogicRemoveFromCounterClientRpc() {
+            TurnOffStove();
         }
         
         private void TurnOffStove() {
