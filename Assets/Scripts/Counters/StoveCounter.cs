@@ -12,22 +12,28 @@ namespace Counters {
         private bool _isTurnedOn;
         [SerializeField] private FryingRecipeScriptable[] fryingRecipes;
         [SerializeField] private KitchenObjectScriptable cookedReference;
-        private float _currentFryingTime;
+        private readonly NetworkVariable<float> _currentFryingTime = new();
         private FryingRecipeScriptable _currentFryingRecipe;
-        
+
+        public override void OnNetworkSpawn() {
+            _currentFryingTime.OnValueChanged += (_, newValue) => {
+                var maxTime = _currentFryingRecipe != null ? _currentFryingRecipe.maxFryingTime : 1f;
+                OnProgressChange?.Invoke(newValue/maxTime);
+            };
+        }
+
         private void Update() {
+            if (!IsServer) return;
             if (!HasKitchenObject() || !_isTurnedOn || !_currentFryingRecipe) return;
-            _currentFryingTime += Time.deltaTime;
-            OnProgressChange?.Invoke(_currentFryingTime/_currentFryingRecipe.maxFryingTime);
-            if (_currentFryingTime > _currentFryingRecipe.maxFryingTime) {
+            _currentFryingTime.Value += Time.deltaTime;
+            //Handle progress by Network Variable
+            if (_currentFryingTime.Value > _currentFryingRecipe.maxFryingTime) {
                 KitchenObject.DestroyKitchenObject(GetKitchenObject());
-                //GetKitchenObject().DestroySelf();
                 KitchenObject.SpawnKitchenObject(_currentFryingRecipe.output, this);
                 if (fryingRecipes.TryGetFryingRecipeWithInput(out _currentFryingRecipe, _currentFryingRecipe.output)) {
-                    _currentFryingTime = 0;
-                    OnProgressChange?.Invoke(0.01f);
+                    _currentFryingTime.Value = 0f;
                 } else {
-                    TurnOffStove();
+                    TurnOffStoveClientRpc();
                 }
             }
         }
@@ -53,25 +59,24 @@ namespace Counters {
 
         [ServerRpc(RequireOwnership = false)]
         private void InteractLogicPlaceOnCounterServerRpc(int index) {
+            _currentFryingTime.Value = 0;
             InteractLogicPlaceOnCounterClientRpc(index);
         }
 
         [ClientRpc]
         private void InteractLogicPlaceOnCounterClientRpc(int index) {
             _currentFryingRecipe = fryingRecipes[index];
-            _currentFryingTime = 0;
             _isTurnedOn = true;
             StoveOnOffChanged?.Invoke(true);
-            OnProgressChange?.Invoke(_currentFryingTime/_currentFryingRecipe.maxFryingTime);
         }
         
         [ServerRpc(RequireOwnership = false)]
         private void InteractLogicRemoveFromCounterServerRpc() {
-            InteractLogicRemoveFromCounterClientRpc();
+            TurnOffStoveClientRpc();
         }
 
         [ClientRpc]
-        private void InteractLogicRemoveFromCounterClientRpc() {
+        private void TurnOffStoveClientRpc() {
             TurnOffStove();
         }
         
