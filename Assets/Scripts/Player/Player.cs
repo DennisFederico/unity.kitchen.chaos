@@ -36,10 +36,22 @@ namespace Player {
         private BaseCounter _selectedCounter;
 
         public override void OnNetworkSpawn() {
+            if (IsServer) {
+                NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManagerOnClientDisconnectCallback;
+            }
+            
             if (!IsOwner) return;
             LocalInstance = this;
+            //Should next two run regardless on ownership?
             transform.position = spawnPositions[(int)OwnerClientId];
+            //Should this work for anySpawning Player?
             localPlayerSpawned?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void NetworkManagerOnClientDisconnectCallback(ulong clientId) {
+            if (clientId == OwnerClientId && HasKitchenObject()) {
+                KitchenObject.DestroyKitchenObject(GetKitchenObject());
+            }
         }
 
         private void OnEnable() {

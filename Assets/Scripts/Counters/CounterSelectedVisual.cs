@@ -12,8 +12,7 @@ namespace Counters {
                 Player.Player.LocalInstance.OnSelectedCounterChanged += PlayerOnSelectedCounterChanged;                
             } else {
                 Player.Player.localPlayerSpawned += AnyPlayerSpawned;
-            }  
-            
+            }
         }
 
         private void AnyPlayerSpawned(object sender, EventArgs e) {

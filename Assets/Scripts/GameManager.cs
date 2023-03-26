@@ -32,14 +32,15 @@ public class GameManager : NetworkBehaviour {
     private readonly NetworkVariable<float> _countDownTimer = new();
     private readonly NetworkVariable<float> _gamePlayTimeLeft = new();
     private bool _isLocalGamePaused;
-    private NetworkVariable<bool> _isGamePaused = new NetworkVariable<bool>();
+    private readonly NetworkVariable<bool> _isGamePaused = new NetworkVariable<bool>();
     private Dictionary<ulong, bool> _playersReady;
     private Dictionary<ulong, bool> _playersPaused;
+    private bool _playerDisconnected = false;
 
     private void Awake() {
         Instance = this;
-        _playersReady = new();
-        _playersPaused = new();
+        _playersReady = new Dictionary<ulong, bool>();
+        _playersPaused = new Dictionary<ulong, bool>();
     }
 
     private void Start() {
@@ -51,10 +52,14 @@ public class GameManager : NetworkBehaviour {
         if (IsServer) {
             _gameState.Value = startState;
             _countDownTimer.Value = countDown;
+            NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManagerOnClientDisconnectCallback;
         }
-
         _gameState.OnValueChanged += (_, _) => GameStateChanged?.Invoke(this, EventArgs.Empty);
         _isGamePaused.OnValueChanged += (_, _) => OnGamePauseValueChanged();
+    }
+
+    private void NetworkManagerOnClientDisconnectCallback(ulong clientId) {
+        _playerDisconnected = true;
     }
 
     private void OnGamePauseValueChanged() {
@@ -108,6 +113,14 @@ public class GameManager : NetworkBehaviour {
         }
     }
 
+    private void LateUpdate() {
+        if (!IsServer) return;
+        if (_playerDisconnected) {
+            _playerDisconnected = false;
+            _isGamePaused.Value = TestGamePausedState();
+        }
+    }
+
     [ServerRpc(RequireOwnership = false)]
     private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default) {
         _playersReady[serverRpcParams.Receive.SenderClientId] = true;
@@ -150,7 +163,7 @@ public class GameManager : NetworkBehaviour {
 
     private bool TestGamePausedState() {
         foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds) {
-            if (_playersPaused.ContainsKey(clientId) && _playersPaused[clientId] == true) {
+            if (_playersPaused.ContainsKey(clientId) && _playersPaused[clientId]) {
                 return true;
             }
         }
