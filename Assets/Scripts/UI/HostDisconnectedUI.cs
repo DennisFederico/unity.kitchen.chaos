@@ -1,10 +1,11 @@
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace UI {
     public class HostDisconnectedUI : BaseUI {
+        [SerializeField] private TextMeshProUGUI messageText;
         [SerializeField] private Button playAgainButton;
 
         private void Start() {
@@ -18,6 +19,9 @@ namespace UI {
 
         private void SingletonOnClientDisconnectCallback(ulong clientId) {
             if (clientId == NetworkManager.ServerClientId) {
+                if (NetworkManager.Singleton.DisconnectReason != string.Empty) {
+                    messageText.text = NetworkManager.Singleton.DisconnectReason;
+                }
                 Show();
             }
         }

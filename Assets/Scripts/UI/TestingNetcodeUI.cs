@@ -1,4 +1,3 @@
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,11 +8,11 @@ namespace UI {
 
         private void Awake() {
             startHostBtn.onClick.AddListener(() => {
-                NetworkManager.Singleton.StartHost();
+                GameManagerMultiplayer.Instance.StartHost();
                 Hide();
             });
             startClientBtn.onClick.AddListener(() => {
-                NetworkManager.Singleton.StartClient();
+                GameManagerMultiplayer.Instance.StartClient();
                 Hide();
             });
         }

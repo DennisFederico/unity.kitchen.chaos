@@ -13,6 +13,25 @@ public class GameManagerMultiplayer : NetworkBehaviour {
         Instance = this;
     }
 
+    public void StartHost() {
+        NetworkManager.Singleton.ConnectionApprovalCallback += ConnectionApprovalCallback;
+        NetworkManager.Singleton.StartHost();
+    }
+
+    private void ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response) {
+        if (GameManager.Instance.IsWaitingToStart()) {
+            response.Approved = true;
+            response.CreatePlayerObject = true;
+        } else {
+            response.Approved = false;
+            response.Reason = "Game already started!";
+        }
+    }
+
+    public void StartClient() {
+        NetworkManager.Singleton.StartClient();
+    }
+    
     public int GetKitchenObjectScriptableIndex(KitchenObjectScriptable kitchenObjectScriptable) {
         var kitchenObjectScriptableIndex = kitchenObjectListScriptable.kitchenObjects.IndexOf(kitchenObjectScriptable);
         return kitchenObjectScriptableIndex;
