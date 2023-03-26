@@ -5,8 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace UI {
-    public class GameOverUI : MonoBehaviour {
-        [SerializeField] private GameObject gameOverUI;
+    public class GameOverUI : BaseUI {
         [SerializeField] private TextMeshProUGUI recipesDeliveredText;
         [SerializeField] private Button retryButton;
 
@@ -27,12 +26,8 @@ namespace UI {
             }
         }
 
-        private void Hide() {
-            gameOverUI.SetActive(false);
-        }
-
-        private void Show() {
-            gameOverUI.SetActive(true);
+        protected override void Show() {
+            base.Show();
             retryButton.Select();
         }
     }

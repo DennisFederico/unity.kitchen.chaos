@@ -3,8 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI {
-    public class TimeLeftUI : MonoBehaviour {
-        [SerializeField] private GameObject timeLeftUI;
+    public class TimeLeftUI : BaseUI {
+
         [SerializeField] private Image timerImage;
         private bool _playing;
 
@@ -21,14 +21,6 @@ namespace UI {
         private void GameManagerOnGameStateChanged(object sender, EventArgs e) {
             _playing = GameManager.Instance.IsGamePlaying();
             if (_playing) Show();
-        }
-
-        private void Show() {
-            timeLeftUI.SetActive(true);
-        }
-
-        private void Hide() {
-            timeLeftUI.SetActive(false);
         }
     }
 }

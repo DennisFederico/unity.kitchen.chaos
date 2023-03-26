@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 
 namespace UI {
-    public class GameStartCountDownUI : MonoBehaviour {
+    public class GameStartCountDownUI : BaseUI {
         [SerializeField] private TextMeshProUGUI countDownText;
         private Animator _animator;
         private int _previousCount;
@@ -11,7 +11,7 @@ namespace UI {
         private readonly int _numberPopupAnimationTrigger = Animator.StringToHash("NumberPopup");
 
         private void Awake() {
-            _animator = GetComponent<Animator>();
+            _animator = gameObjectUI.GetComponent<Animator>();
         }
 
         private void Start() {
@@ -37,14 +37,6 @@ namespace UI {
             } else {
                 Hide();
             }
-        }
-
-        private void Hide() {
-            countDownText.gameObject.SetActive(false);
-        }
-
-        private void Show() {
-            countDownText.gameObject.SetActive(true);
         }
     }
 }

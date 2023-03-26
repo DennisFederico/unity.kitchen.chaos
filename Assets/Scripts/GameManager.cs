@@ -1,18 +1,24 @@
 using System;
+using System.Collections.Generic;
 using Player;
+using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : NetworkBehaviour {
     public static GameManager Instance { private set; get; }
 
     public event EventHandler GameStateChanged;
-    public event Action OnGamePaused;
-    public event Action OnGameUnPaused;
+    public event EventHandler LocalPlayerReadyChanged;
+    public event Action OnLocalGamePaused;
+    public event Action OnLocalGameUnPaused;
+    public event Action OnMultiplayerGamePaused;
+    public event Action OnMultiplayerGameUnPaused;
 
     [SerializeField] private float roundDuration = 90f;
-    [SerializeField] private float countDown = 1f;
-    [SerializeField] private GameState startState = GameState.StartCountDown;
-    
+    [SerializeField] private float countDown = 3f;
+    [SerializeField] private GameState startState = GameState.WaitingToStart;
+
     private enum GameState {
         WaitingToStart,
         StartCountDown,
@@ -21,18 +27,19 @@ public class GameManager : MonoBehaviour {
         GameOver,
     }
 
-    private GameState _gameState;
-    // private float _waitingToStartTimer = 2f;
-    private float _countDownTimer = 3f;
-    private float _gamePlayTimeLeft;
-    private bool _gamePaused;
+    private readonly NetworkVariable<GameState> _gameState = new();
+    private bool _isLocalPlayerReady;
+    private readonly NetworkVariable<float> _countDownTimer = new();
+    private readonly NetworkVariable<float> _gamePlayTimeLeft = new();
+    private bool _isLocalGamePaused;
+    private NetworkVariable<bool> _isGamePaused = new NetworkVariable<bool>();
+    private Dictionary<ulong, bool> _playersReady;
+    private Dictionary<ulong, bool> _playersPaused;
 
     private void Awake() {
         Instance = this;
-        //Overrides for Editor
-        _gameState = startState;
-        _countDownTimer = countDown;
-        //_gameState = GameState.WaitingToStart;
+        _playersReady = new();
+        _playersPaused = new();
     }
 
     private void Start() {
@@ -40,11 +47,32 @@ public class GameManager : MonoBehaviour {
         GameInput.Instance.OnInteractAction += GameInputOnInteractAction;
     }
 
+    public override void OnNetworkSpawn() {
+        if (IsServer) {
+            _gameState.Value = startState;
+            _countDownTimer.Value = countDown;
+        }
+
+        _gameState.OnValueChanged += (_, _) => GameStateChanged?.Invoke(this, EventArgs.Empty);
+        _isGamePaused.OnValueChanged += (_, _) => OnGamePauseValueChanged();
+    }
+
+    private void OnGamePauseValueChanged() {
+        //DONT CHANGE TIMESCALE IF YOU DONT WANT TO PAUSE THE GAME
+        if (_isGamePaused.Value) {
+            Time.timeScale = 0f;
+            OnMultiplayerGamePaused?.Invoke();
+        } else {
+            Time.timeScale = 1f;
+            OnMultiplayerGameUnPaused?.Invoke();
+        }
+    }
+
     private void GameInputOnInteractAction() {
-        if (_gameState == GameState.WaitingToStart) {
-            _gameState = GameState.StartCountDown;
-            GameStateChanged?.Invoke(this, EventArgs.Empty);
-            GameInput.Instance.OnInteractAction -= GameInputOnInteractAction;
+        if (_gameState.Value == GameState.WaitingToStart) {
+            _isLocalPlayerReady = true;
+            LocalPlayerReadyChanged?.Invoke(this, EventArgs.Empty);
+            SetPlayerReadyServerRpc();
         }
     }
 
@@ -53,28 +81,25 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Update() {
-        switch (_gameState) {
+        if (!IsServer) return;
+        switch (_gameState.Value) {
+            default:
             case GameState.WaitingToStart:
-                // _waitingToStartTimer -= Time.deltaTime;
-                // if (_waitingToStartTimer < 0f) {
-                //     _gameState = GameState.StartCountDown;
-                //     GameStateChanged?.Invoke(this, EventArgs.Empty);
-                // }
                 break;
             case GameState.StartCountDown:
-                _countDownTimer -= Time.deltaTime;
-                if (_countDownTimer < 0f) {
-                    _gameState = GameState.GamePlaying;
-                    _gamePlayTimeLeft = roundDuration;
-                    GameStateChanged?.Invoke(this, EventArgs.Empty);
+                _countDownTimer.Value -= Time.deltaTime;
+                if (_countDownTimer.Value < 0f) {
+                    _gameState.Value = GameState.GamePlaying;
+                    _gamePlayTimeLeft.Value = roundDuration;
                 }
+
                 break;
             case GameState.GamePlaying:
-                _gamePlayTimeLeft -= Time.deltaTime;
-                if (_gamePlayTimeLeft < 0f) {
-                    _gameState = GameState.GameOver;
-                    GameStateChanged?.Invoke(this, EventArgs.Empty);
+                _gamePlayTimeLeft.Value -= Time.deltaTime;
+                if (_gamePlayTimeLeft.Value < 0f) {
+                    _gameState.Value = GameState.GameOver;
                 }
+
                 break;
             case GameState.GamePaused:
                 break;
@@ -83,41 +108,84 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public void TogglePauseGame() {
-        _gamePaused = !_gamePaused;
-        if (_gamePaused) {
-            Time.timeScale = 0f;
-            OnGamePaused?.Invoke();
-        } else {
-            Time.timeScale = 1f;
-            OnGameUnPaused?.Invoke();
+    [ServerRpc(RequireOwnership = false)]
+    private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default) {
+        _playersReady[serverRpcParams.Receive.SenderClientId] = true;
+
+        bool allPlayersReady = true;
+        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds) {
+            if (!_playersReady.ContainsKey(clientId) || !_playersReady[clientId]) {
+                allPlayersReady = false;
+                break;
+            }
+        }
+
+        if (allPlayersReady) {
+            _gameState.Value = GameState.StartCountDown;
         }
     }
 
-    public bool IsWaitingToStart() {
-        return _gameState == GameState.WaitingToStart;
+    public void TogglePauseGame() {
+        _isLocalGamePaused = !_isLocalGamePaused;
+        if (_isLocalGamePaused) {
+            PauseGameServerRpc();
+            OnLocalGamePaused?.Invoke();
+        } else {
+            UnPauseGameServerRpc();
+            OnLocalGameUnPaused?.Invoke();
+        }
     }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void PauseGameServerRpc(ServerRpcParams serverRpcParams = default) {
+        _playersPaused[serverRpcParams.Receive.SenderClientId] = true;
+        _isGamePaused.Value = TestGamePausedState();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void UnPauseGameServerRpc(ServerRpcParams serverRpcParams = default) {
+        _playersPaused[serverRpcParams.Receive.SenderClientId] = false;
+        _isGamePaused.Value = TestGamePausedState();
+    }
+
+    private bool TestGamePausedState() {
+        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds) {
+            if (_playersPaused.ContainsKey(clientId) && _playersPaused[clientId] == true) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool IsWaitingToStart() {
+        return _gameState.Value == GameState.WaitingToStart;
+    }
+
     public bool IsGamePlaying() {
-        return _gameState == GameState.GamePlaying;
+        return _gameState.Value == GameState.GamePlaying;
     }
 
     public bool IsStartCountDownActive() {
-        return _gameState == GameState.StartCountDown;
+        return _gameState.Value == GameState.StartCountDown;
     }
 
     public float GetCountDownTimer() {
-        return _countDownTimer;
+        return _countDownTimer.Value;
+    }
+
+    public bool IsLocalPlayerReady() {
+        return _isLocalPlayerReady;
     }
 
     public bool IsGameOver() {
-        return _gameState == GameState.GameOver;
+        return _gameState.Value == GameState.GameOver;
     }
 
     public float GetPlayTimeLeft() {
-        return _gamePlayTimeLeft;
+        return _gamePlayTimeLeft.Value;
     }
 
     public float GetPlayTimeLeftNormalized() {
-        return 1 - (_gamePlayTimeLeft / roundDuration);
+        return 1 - (_gamePlayTimeLeft.Value / roundDuration);
     }
 }

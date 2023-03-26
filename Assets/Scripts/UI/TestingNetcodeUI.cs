@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI {
-    public class TestingNetcodeUI : MonoBehaviour {
+    public class TestingNetcodeUI : BaseUI {
         [SerializeField] private Button startHostBtn;
         [SerializeField] private Button startClientBtn;
 
@@ -16,10 +16,6 @@ namespace UI {
                 NetworkManager.Singleton.StartClient();
                 Hide();
             });
-        }
-
-        private void Hide() {
-            gameObject.SetActive(false);
         }
     }
 }

@@ -2,8 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI {
-    public class GamePausedUI : MonoBehaviour {
-        [SerializeField] private GameObject gamePausedUI;
+    public class GamePausedUI : BaseUI {
+
         [SerializeField] private Button resumeButton;
         [SerializeField] private Button optionsButton;
         [SerializeField] private Button mainMenuButton;
@@ -18,18 +18,14 @@ namespace UI {
         }
 
         private void Start() {
-            GameManager.Instance.OnGamePaused += Show;
-            GameManager.Instance.OnGameUnPaused += Hide;
+            GameManager.Instance.OnLocalGamePaused += Show;
+            GameManager.Instance.OnLocalGameUnPaused += Hide;
             Hide();
         }
 
-        private void Show() {
-            gamePausedUI.SetActive(true);
+        protected override void Show() {
+            base.Show();
             resumeButton.Select();
-        }
-
-        private void Hide() {
-            gamePausedUI.SetActive(false);
         }
     }
 }

@@ -6,10 +6,9 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace UI {
-    public class GameOptionsUI : MonoBehaviour {
+    public class GameOptionsUI : BaseUI {
         public static GameOptionsUI Instance { get; private set; }
 
-        [SerializeField] private GameObject gameOptionsUI;
         [SerializeField] private Button musicVolumeButton;
         [SerializeField] private Button soundFxVolumeButton;
         [SerializeField] private Button closeButton;
@@ -62,23 +61,17 @@ namespace UI {
         }
 
         private void Start() {
-            GameManager.Instance.OnGameUnPaused += GameManagerOnGameUnPaused;
+            GameManager.Instance.OnLocalGameUnPaused += LocalGameManagerOnLocalGameUnPaused;
             HideRebindMsg();
             Hide();
         }
 
         public void Show(Action onClose) {
             _onCloseButtonAction = onClose;
-            UpdateVisuals();
-            gameOptionsUI.SetActive(true);
-            closeButton.Select();
+            Show();
         }
 
-        public void Hide() {
-            gameOptionsUI.SetActive(false);
-        }
-
-        private void GameManagerOnGameUnPaused() {
+        private void LocalGameManagerOnLocalGameUnPaused() {
             Hide();
         }
 
@@ -107,6 +100,12 @@ namespace UI {
         private void RebindBinding(GameInput.Binding binding) {
             ShowRebindMsg();
             GameInput.Instance.RebindBinding(binding, HideRebindMsg);
+        }
+
+        protected override void Show() {
+            base.Show();
+            UpdateVisuals();
+            closeButton.Select();
         }
     }
 }

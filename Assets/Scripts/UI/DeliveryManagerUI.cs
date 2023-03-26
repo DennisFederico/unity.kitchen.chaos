@@ -1,14 +1,15 @@
-using ScriptableObjects;
 using UnityEngine;
 
 namespace UI {
-    public class DeliveryManagerUI : MonoBehaviour {
+    public class DeliveryManagerUI : BaseUI {
+
         [SerializeField] private Transform ordersContainer;
         [SerializeField] private OrderUI orderTemplate;
 
         private void Start() {
             DeliveryManager.Instance.newOrderArrived += DeliveryManagerOnNewOrderArrived;
             DeliveryManager.Instance.orderFulfilled += DeliveryManagerOnOrderFulfilled;
+            Hide();
         }
 
         private void DeliveryManagerOnOrderFulfilled() {
@@ -16,6 +17,7 @@ namespace UI {
         }
 
         private void DeliveryManagerOnNewOrderArrived() {
+            Show();
             UpdateOrdersListVisual();
         }
 

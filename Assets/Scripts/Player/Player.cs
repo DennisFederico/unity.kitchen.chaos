@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Counters;
 using KitchenObjects;
 using Unity.Netcode;
@@ -25,8 +26,10 @@ namespace Player {
     
         [SerializeField] private float moveSpeed = 7f;
         [SerializeField] private LayerMask countersLayerMask;
+        [SerializeField] private LayerMask collisionLayerMask;
         [SerializeField] private Transform kitchenObjectParentPoint;
-
+        [SerializeField] private List<Vector3> spawnPositions;
+        
         private bool _isWalking;
         private Vector3 _lastInteractDirection;
         private KitchenObject _kitchenObject;
@@ -35,6 +38,7 @@ namespace Player {
         public override void OnNetworkSpawn() {
             if (!IsOwner) return;
             LocalInstance = this;
+            transform.position = spawnPositions[(int)OwnerClientId];
             localPlayerSpawned?.Invoke(this, EventArgs.Empty);
         }
 
@@ -62,16 +66,17 @@ namespace Player {
             float playerRadius = .65f;
             float moveDeadZone = .4f;
             //DebugExtension.DebugCapsule(transform.position + (transform.forward * moveDistance), (transform.position + (Vector3.up * 2)) + (transform.forward * moveDistance), Color.magenta, playerRadius);
-            bool collided = Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveDirection, moveDistance);
+            //bool collided = Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveDirection, moveDistance, collisionLayerMask);
+            bool collided = Physics.BoxCast(transform.position, Vector3.one * playerRadius, moveDirection, Quaternion.identity, moveDistance, collisionLayerMask);
             if (collided) {
                 //Try move X and Z independently
                 var moveX = new Vector3(moveDirection.x, 0, 0).normalized;
                 var moveZ = new Vector3(0, 0, moveDirection.z).normalized;
-                if (Mathf.Abs(moveDirection.x) >= moveDeadZone && !Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveX, moveDistance)) {
-                    moveDirection = moveX;
+                 if (Mathf.Abs(moveDirection.x) >= moveDeadZone && !Physics.BoxCast(transform.position, Vector3.one * playerRadius, moveX, Quaternion.identity, moveDistance, collisionLayerMask)) {
+                     moveDirection = moveX;
                     collided = false;
-                } else if (Mathf.Abs(moveDirection.z) >= moveDeadZone && !Physics.CapsuleCast(transform.position, transform.position + (Vector3.up * 2), playerRadius, moveZ, moveDistance)) {
-                    moveDirection = moveZ;
+                 } else if (Mathf.Abs(moveDirection.z) >= moveDeadZone && !Physics.BoxCast(transform.position, Vector3.one * playerRadius, moveZ, Quaternion.identity, moveDistance,collisionLayerMask)) {
+                     moveDirection = moveZ;
                     collided = false;
                 }
             }
