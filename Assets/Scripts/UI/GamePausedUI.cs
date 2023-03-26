@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,7 +15,10 @@ namespace UI {
                 Hide();
                 GameOptionsUI.Instance.Show(Show);
             });
-            mainMenuButton.onClick.AddListener(() => { Loader.Load(Loader.Scene.MainMenu); });
+            mainMenuButton.onClick.AddListener(() => {
+                NetworkManager.Singleton.Shutdown();
+                Loader.Load(Loader.Scene.MainMenu);
+            });
         }
 
         private void Start() {

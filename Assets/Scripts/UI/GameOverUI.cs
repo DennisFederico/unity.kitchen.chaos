@@ -1,5 +1,6 @@
 using System;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,11 +8,13 @@ using UnityEngine.UI;
 namespace UI {
     public class GameOverUI : BaseUI {
         [SerializeField] private TextMeshProUGUI recipesDeliveredText;
-        [SerializeField] private Button retryButton;
+        [SerializeField] private Button playAgainButton;
 
         private void Start() {
             GameManager.Instance.GameStateChanged += GameManagerOnGameStateChanged;
-            retryButton.onClick.AddListener(() => {
+            playAgainButton.onClick.AddListener(() => {
+                NetworkManager.Singleton.Shutdown();
+                //Loader.Load(Loader.Scene.MainMenu);
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             });
             Hide();
@@ -28,7 +31,7 @@ namespace UI {
 
         protected override void Show() {
             base.Show();
-            retryButton.Select();
+            playAgainButton.Select();
         }
     }
 }
