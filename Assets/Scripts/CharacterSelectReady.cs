@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 
 public class CharacterSelectReady : NetworkBehaviour {
     
     public static CharacterSelectReady Instance { get; private set; }
-    
+    public event Action OnAnyPlayerReady; 
     private Dictionary<ulong, bool> _playersReady;
 
     private void Awake() {
@@ -15,9 +16,14 @@ public class CharacterSelectReady : NetworkBehaviour {
     public void SetPlayerReady() {
         SetPlayerReadyServerRpc();
     }
+
+    public bool IsPlayerReady(ulong clientId) {
+        return _playersReady.ContainsKey(clientId) && _playersReady[clientId];
+    }
     
     [ServerRpc(RequireOwnership = false)]
     private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default) {
+        SetPlayerReadyClientRpc(serverRpcParams.Receive.SenderClientId);
         _playersReady[serverRpcParams.Receive.SenderClientId] = true;
 
         bool allPlayersReady = true;
@@ -31,5 +37,11 @@ public class CharacterSelectReady : NetworkBehaviour {
         if (allPlayersReady) {
             Loader.LoadNetwork(Loader.Scene.GameScene);
         }
+    }
+
+    [ClientRpc]
+    private void SetPlayerReadyClientRpc(ulong clientId) {
+        _playersReady[clientId] = true;
+        OnAnyPlayerReady?.Invoke();
     }
 }

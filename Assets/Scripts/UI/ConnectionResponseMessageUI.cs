@@ -9,6 +9,7 @@ namespace UI {
         [SerializeField] private TextMeshProUGUI messageText;
         [SerializeField] private Button closeButton;
 
+        private const string GenericConnectionErrorMessage = "Failed to connect";
         private void Awake() {
             closeButton.onClick.AddListener(Hide);
         }
@@ -23,7 +24,7 @@ namespace UI {
         }
 
         private void GameManagerMultiplayerOnFailedToJoinGame() {
-            messageText.text = string.IsNullOrEmpty(NetworkManager.Singleton.DisconnectReason) ? "Failed to connect" : NetworkManager.Singleton.DisconnectReason;
+            messageText.text = string.IsNullOrEmpty(NetworkManager.Singleton.DisconnectReason) ? GenericConnectionErrorMessage : NetworkManager.Singleton.DisconnectReason;
             Show();
         }
     }
