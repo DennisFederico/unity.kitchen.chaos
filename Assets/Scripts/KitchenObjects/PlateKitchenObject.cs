@@ -9,7 +9,7 @@ namespace KitchenObjects {
 
         public event Action<KitchenObjectScriptable> AddedIngredient;
         //TODO... MAKE IT FOR VALID RECIPES
-        [SerializeField] private List<KitchenObjectScriptable> validIngredientsScriptables;
+        [SerializeField] private List<KitchenObjectScriptable> validIngredientsScriptable;
         private List<KitchenObjectScriptable> _ingredientsList;
 
         protected override void Awake() {
@@ -19,7 +19,7 @@ namespace KitchenObjects {
 
         //TODO... Here we could follow a recipe as we add ingredients
         public bool TryAddIngredient(KitchenObjectScriptable kitchenObjectScriptable) {
-            if (!validIngredientsScriptables.Contains(kitchenObjectScriptable)) return false;
+            if (!validIngredientsScriptable.Contains(kitchenObjectScriptable)) return false;
             if (_ingredientsList.Contains(kitchenObjectScriptable)) return false;
             var kitchenObjectScriptableIndex = GameManagerMultiplayer.Instance.GetKitchenObjectScriptableIndex(kitchenObjectScriptable);
             AddIngredientServerRpc(kitchenObjectScriptableIndex);
@@ -38,9 +38,8 @@ namespace KitchenObjects {
             AddedIngredient?.Invoke(kitchenObjectScriptable);
         }
 
-        public List<KitchenObjectScriptable> IngredientsList {
-            get => _ingredientsList;
-            private set => _ingredientsList = value;
+        public List<KitchenObjectScriptable> GetCurrentIngredients() {
+            return _ingredientsList;
         }
     }
 }

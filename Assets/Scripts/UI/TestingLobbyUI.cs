@@ -9,7 +9,6 @@ namespace UI {
         private void Awake() {
             createGameButton.onClick.AddListener(() => {
                 GameManagerMultiplayer.Instance.StartHost();
-                //Loader.Load(Loader.Scene.CharacterSelectionScene);
                 Loader.LoadNetwork(Loader.Scene.CharacterSelectionScene);
             });
             joinGameButton.onClick.AddListener(() => {

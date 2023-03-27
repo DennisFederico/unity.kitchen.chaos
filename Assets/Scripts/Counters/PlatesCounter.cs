@@ -11,9 +11,9 @@ namespace Counters {
         public event Action PlateGrabbed;
         [SerializeField] private KitchenObjectScriptable plateKitchenObjectScriptable;
         private float _spawnPlateTimer;
-        private float _spawnPlateTimerMax = 4f;
+        private readonly float _spawnPlateTimerMax = 4f;
         private int _spawnedPlatesAmount;
-        private int _spawnedPlatesMaxAmount = 4;
+        private readonly int _spawnedPlatesMaxAmount = 4;
 
         private void Update() {
             if (!IsServer) return;

@@ -60,8 +60,8 @@ public class GameManager : NetworkBehaviour {
         _isGamePaused.OnValueChanged += (_, _) => OnGamePauseValueChanged();
     }
 
-    private void SceneManagerOnOnLoadEventCompleted(string scenename, LoadSceneMode loadscenemode, List<ulong> clientscompleted, List<ulong> clientstimedout) {
-        foreach (var clientId in clientscompleted) {
+    private void SceneManagerOnOnLoadEventCompleted(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut) {
+        foreach (var clientId in clientsCompleted) {
             var player = Instantiate(playerPrefab);
             player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
         }

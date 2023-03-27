@@ -18,11 +18,10 @@ namespace Counters {
     
         public override void Interact(Player.Player player) {
             if (!HasKitchenObject() && player.HasKitchenObject()) {
-                if (cuttingRecipes.TryGetCuttingRecipeWithInput(out var outputRecipe, player.GetKitchenObject().KitchenObjectScriptable)) {
-                    KitchenObject kitchenObject = player.GetKitchenObject();
-                    kitchenObject.SetKitchenObjectParent(this);
-                    InteractLogicPlaceOnCounterServerRpc();
-                }
+                if (!cuttingRecipes.HasRecipeWithInput(player.GetKitchenObject().KitchenObjectScriptable)) return;
+                KitchenObject kitchenObject = player.GetKitchenObject();
+                kitchenObject.SetKitchenObjectParent(this);
+                InteractLogicPlaceOnCounterServerRpc();
             } else if (HasKitchenObject()) {
                 if (!player.HasKitchenObject()) {
                     GetKitchenObject().SetKitchenObjectParent(player);
@@ -53,24 +52,21 @@ namespace Counters {
         [ServerRpc(RequireOwnership = false)]
         private void CutKitchenObjectServerRpc() {
             var kitchenObjectScriptableInput = GetKitchenObject().KitchenObjectScriptable;
-            if (cuttingRecipes.TryGetCuttingRecipeWithInput(out var outputRecipe, kitchenObjectScriptableInput)) {
-                CutKitchenObjectClientRpc();
-                if (_cuttingProgress >= outputRecipe.cuttingProgressMax) {
-                    KitchenObject.DestroyKitchenObject(GetKitchenObject());
-                    KitchenObject.SpawnKitchenObject(outputRecipe.output, this);
-                }
-            }
+            if (!cuttingRecipes.TryGetCuttingRecipeWithInput(out var outputRecipe, kitchenObjectScriptableInput)) return;
+            CutKitchenObjectClientRpc();
+            if (_cuttingProgress < outputRecipe.cuttingProgressMax) return;
+            KitchenObject.DestroyKitchenObject(GetKitchenObject());
+            KitchenObject.SpawnKitchenObject(outputRecipe.output, this);
         }
 
         [ClientRpc]
         private void CutKitchenObjectClientRpc() {
             var kitchenObjectScriptableInput = GetKitchenObject().KitchenObjectScriptable;
-            if (cuttingRecipes.TryGetCuttingRecipeWithInput(out var outputRecipe, kitchenObjectScriptableInput)) {
-                _cuttingProgress++;
-                OnCutAction?.Invoke();
-                OnAnyCut?.Invoke(this, EventArgs.Empty);
-                OnProgressChange?.Invoke((float) _cuttingProgress/outputRecipe.cuttingProgressMax);
-            }
+            if (!cuttingRecipes.TryGetCuttingRecipeWithInput(out var outputRecipe, kitchenObjectScriptableInput)) return;
+            _cuttingProgress++;
+            OnCutAction?.Invoke();
+            OnAnyCut?.Invoke(this, EventArgs.Empty);
+            OnProgressChange?.Invoke((float) _cuttingProgress/outputRecipe.cuttingProgressMax);
         }
     }
 }

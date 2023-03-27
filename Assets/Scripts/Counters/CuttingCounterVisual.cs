@@ -13,7 +13,6 @@ namespace Counters {
 
         private void Start() {
             cuttingCounter.OnCutAction += CuttingCounterOnCutAction;
-        
         }
 
         private void CuttingCounterOnCutAction() {

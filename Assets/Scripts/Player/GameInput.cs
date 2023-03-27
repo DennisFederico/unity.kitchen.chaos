@@ -150,8 +150,8 @@ namespace Player {
                     _playerInputActions.Player.Enable();
                     onRebound();
 
-                    var bindigsOverride = _playerInputActions.SaveBindingOverridesAsJson();
-                    PlayerPrefs.SetString(ConstPlayerPrefsBindings, bindigsOverride);
+                    var bindingsOverride = _playerInputActions.SaveBindingOverridesAsJson();
+                    PlayerPrefs.SetString(ConstPlayerPrefsBindings, bindingsOverride);
                     PlayerPrefs.Save();
                     
                     OnBindingRebind?.Invoke();

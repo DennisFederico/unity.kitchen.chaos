@@ -7,7 +7,7 @@ namespace Counters {
         private const float BurnShowProgressAmount = .5f;
         private bool _playWarningSound;
         private float _warningSoundTimer;
-        private float _warningSoundTimerMax = .2f;
+        private readonly float _warningSoundTimerMax = .2f;
 
         private void Awake() {
             _audioSource = GetComponent<AudioSource>();

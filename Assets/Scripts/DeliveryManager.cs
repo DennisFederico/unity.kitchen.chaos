@@ -66,7 +66,7 @@ public class DeliveryManager : NetworkBehaviour {
     
     public void DeliverPlate(DeliveryCounter counter, PlateKitchenObject plate) {
         //match plate ingredients to waiting recipes
-        if (TryFulfillWaitingRecipe(out var waitingRecipeIndex, plate.IngredientsList)) {
+        if (TryFulfillWaitingRecipe(out var waitingRecipeIndex, plate.GetCurrentIngredients())) {
             DeliverCorrectRecipeServerRpc(waitingRecipeIndex);
         } else {
             DeliverIncorrectRecipeServerRpc();
@@ -98,7 +98,7 @@ public class DeliveryManager : NetworkBehaviour {
         DeliverIncorrectRecipeClientRpc();
     }
 
-    //TODO SHOULD USE THE COUNTER GAMEOBJECT ID 
+    //TODO SHOULD USE THE COUNTER GAME OBJECT ID 
     [ClientRpc]
     private void DeliverIncorrectRecipeClientRpc() {
         // FailedOrder?.Invoke(counter, EventArgs.Empty);

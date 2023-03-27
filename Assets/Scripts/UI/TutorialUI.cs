@@ -28,12 +28,6 @@ namespace UI {
                 Hide();
             }
         }
-        //
-        // private void GameManagerOnGameStateChanged(object sender, EventArgs e) {
-        //     if (GameManager.Instance.IsStartCountDownActive()) {
-        //         Hide();
-        //     }
-        // }
 
         private void GameManagerOnLocalPlayerReadyChanged(object sender, EventArgs e) {
             if (GameManager.Instance.IsLocalPlayerReady()) {

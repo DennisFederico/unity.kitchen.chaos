@@ -12,6 +12,7 @@ namespace Player {
             public BaseCounter baseCounter;
         }
 
+        //TODO confirm if this should really be static
         public static EventHandler localPlayerSpawned;
         public static EventHandler anyonePickedSomething;
         public static void ResetStaticEventHandler() {
@@ -42,9 +43,7 @@ namespace Player {
             
             if (!IsOwner) return;
             LocalInstance = this;
-            //Should next two run regardless on ownership?
             transform.position = spawnPositions[(int)OwnerClientId];
-            //Should this work for anySpawning Player?
             localPlayerSpawned?.Invoke(this, EventArgs.Empty);
         }
 

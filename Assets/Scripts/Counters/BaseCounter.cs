@@ -16,7 +16,6 @@ namespace Counters {
         public abstract void Interact(Player.Player player);
     
         public virtual void InteractAlternate(Player.Player player) {
-            //Debug.Log($"BaseCounter.AlternateInteract - Invalid call");
         }
 
         public Transform GetKitchenObjectParentPoint() {
