@@ -1,16 +1,22 @@
+using System;
 using KitchenObjects;
 using ScriptableObjects;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManagerMultiplayer : NetworkBehaviour {
     
     public static GameManagerMultiplayer Instance { get; private set; }
-
+    private const int MaxPlayers = 4;
     [SerializeField] private KitchenObjectListScriptable kitchenObjectListScriptable;
 
+    public event Action TryingToJoinGame;
+    public event Action FailedToJoinGame;
+    
     private void Awake() {
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     public void StartHost() {
@@ -19,16 +25,23 @@ public class GameManagerMultiplayer : NetworkBehaviour {
     }
 
     private void ConnectionApprovalCallback(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response) {
-        if (GameManager.Instance.IsWaitingToStart()) {
-            response.Approved = true;
-            response.CreatePlayerObject = true;
-        } else {
+        if (SceneManager.GetActiveScene().name != Loader.Scene.CharacterSelectionScene.ToString()) {
             response.Approved = false;
             response.Reason = "Game already started!";
+            return;
         }
+
+        if (NetworkManager.Singleton.ConnectedClientsIds.Count >= MaxPlayers) {
+            response.Approved = false;
+            response.Reason = "Game full";
+            return;
+        }
+        response.Approved = true;
     }
 
     public void StartClient() {
+        TryingToJoinGame?.Invoke();
+        NetworkManager.Singleton.OnClientDisconnectCallback += _ => FailedToJoinGame?.Invoke(); 
         NetworkManager.Singleton.StartClient();
     }
     

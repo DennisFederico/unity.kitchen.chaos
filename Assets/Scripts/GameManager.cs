@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using Player;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkBehaviour {
     public static GameManager Instance { private set; get; }
@@ -15,6 +15,7 @@ public class GameManager : NetworkBehaviour {
     public event Action OnMultiplayerGamePaused;
     public event Action OnMultiplayerGameUnPaused;
 
+    [SerializeField] private Transform playerPrefab;
     [SerializeField] private float roundDuration = 90f;
     [SerializeField] private float countDown = 3f;
     [SerializeField] private GameState startState = GameState.WaitingToStart;
@@ -35,7 +36,7 @@ public class GameManager : NetworkBehaviour {
     private readonly NetworkVariable<bool> _isGamePaused = new NetworkVariable<bool>();
     private Dictionary<ulong, bool> _playersReady;
     private Dictionary<ulong, bool> _playersPaused;
-    private bool _playerDisconnected = false;
+    private bool _playerDisconnected;
 
     private void Awake() {
         Instance = this;
@@ -53,9 +54,17 @@ public class GameManager : NetworkBehaviour {
             _gameState.Value = startState;
             _countDownTimer.Value = countDown;
             NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManagerOnClientDisconnectCallback;
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManagerOnOnLoadEventCompleted;
         }
         _gameState.OnValueChanged += (_, _) => GameStateChanged?.Invoke(this, EventArgs.Empty);
         _isGamePaused.OnValueChanged += (_, _) => OnGamePauseValueChanged();
+    }
+
+    private void SceneManagerOnOnLoadEventCompleted(string scenename, LoadSceneMode loadscenemode, List<ulong> clientscompleted, List<ulong> clientstimedout) {
+        foreach (var clientId in clientscompleted) {
+            var player = Instantiate(playerPrefab);
+            player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+        }
     }
 
     private void NetworkManagerOnClientDisconnectCallback(ulong clientId) {
@@ -124,7 +133,7 @@ public class GameManager : NetworkBehaviour {
     [ServerRpc(RequireOwnership = false)]
     private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default) {
         _playersReady[serverRpcParams.Receive.SenderClientId] = true;
-
+    
         bool allPlayersReady = true;
         foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds) {
             if (!_playersReady.ContainsKey(clientId) || !_playersReady[clientId]) {
@@ -132,7 +141,7 @@ public class GameManager : NetworkBehaviour {
                 break;
             }
         }
-
+    
         if (allPlayersReady) {
             _gameState.Value = GameState.StartCountDown;
         }
