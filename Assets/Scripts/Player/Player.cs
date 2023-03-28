@@ -4,6 +4,7 @@ using Counters;
 using KitchenObjects;
 using Unity.Netcode;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Player {
     public class Player : NetworkBehaviour, IKitchenObjectParent {
@@ -53,8 +54,8 @@ namespace Player {
             
             if (!IsOwner) return;
             LocalInstance = this;
-            
-            transform.position = spawnPositions[GameManagerMultiplayer.Instance.GetPlayerDataIndexForClientId(OwnerClientId)];
+            transform.position = spawnPositions[GameManagerMultiplayer.Instance.GetPlayerPositionForClientId(OwnerClientId)];
+            transform.rotation = Quaternion.Euler(0, Random.Range(140, 220), 0);
             localPlayerSpawned?.Invoke(this, EventArgs.Empty);
         }
 

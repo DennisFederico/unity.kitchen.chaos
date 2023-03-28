@@ -1,4 +1,4 @@
-using System;
+using Lobby;
 using Player;
 using TMPro;
 using Unity.Netcode;
@@ -7,14 +7,14 @@ using UnityEngine.UI;
 
 public class CharacterSelectPlayer : MonoBehaviour {
 
-    [SerializeField] private int playerIndex;
+    [SerializeField] private int playerPosition;
     [SerializeField] private TMP_Text readyText;
     [SerializeField] private PlayerVisual playerVisual;
     [SerializeField] private Button kickPlayerButton;
 
     private void Awake() {
         kickPlayerButton.onClick.AddListener(() => {
-            if (GameManagerMultiplayer.Instance.TryGetPlayerDataForPlayerIndex(playerIndex, out var playerData)) {
+            if (GameManagerMultiplayer.Instance.TryGetPlayerDataForPlayerPosition(playerPosition, out var playerData)) {
                 GameManagerMultiplayer.Instance.KickPlayer(playerData.clientId);
             }
         });
@@ -23,7 +23,7 @@ public class CharacterSelectPlayer : MonoBehaviour {
     private void Start() {
         GameManagerMultiplayer.Instance.AnyPlayerDataChanged += UpdatePlayer;
         CharacterSelectReady.Instance.OnAnyPlayerReady += UpdatePlayer;
-        kickPlayerButton.gameObject.SetActive(NetworkManager.Singleton.IsServer && playerIndex != 0);
+        kickPlayerButton.gameObject.SetActive(NetworkManager.Singleton.IsServer && playerPosition != 0);
         UpdatePlayer();
     }
 
@@ -32,7 +32,7 @@ public class CharacterSelectPlayer : MonoBehaviour {
     }
 
     private void UpdatePlayer() {
-        if (GameManagerMultiplayer.Instance.TryGetPlayerDataForPlayerIndex(playerIndex, out var playerData)) {
+        if (GameManagerMultiplayer.Instance.TryGetPlayerDataForPlayerPosition(playerPosition, out var playerData)) {
             readyText.gameObject.SetActive(CharacterSelectReady.Instance.IsPlayerReady(playerData.clientId));
             playerVisual.SetPlayerColor(GameManagerMultiplayer.Instance.GetPlayerColorByColorId(playerData.colorId));
             Show();
