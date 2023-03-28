@@ -51,7 +51,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <KitchenObjectScriptable>k__BackingField: {fileID: 11400000, guid: e29430a3527b44e06823fb0790b5662e,
     type: 2}
-  validIngredientsScriptables:
+  validIngredientsScriptable:
   - {fileID: 11400000, guid: 492155b88a453456ea41054c251b0931, type: 2}
   - {fileID: 11400000, guid: 5b234c84587154a0086d7204d4615005, type: 2}
   - {fileID: 11400000, guid: 2a29cc62d6a144f7a9dea009cd45c58b, type: 2}

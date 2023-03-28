@@ -17,6 +17,12 @@ namespace UI {
             Hide();
         }
 
+        private void OnDestroy() {
+            if (NetworkManager.Singleton) {
+                NetworkManager.Singleton.OnClientDisconnectCallback -= SingletonOnClientDisconnectCallback;                
+            }
+        }
+
         private void SingletonOnClientDisconnectCallback(ulong clientId) {
             if (clientId == NetworkManager.ServerClientId) {
                 if (NetworkManager.Singleton.DisconnectReason != string.Empty) {

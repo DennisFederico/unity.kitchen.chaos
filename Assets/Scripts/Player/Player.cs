@@ -30,11 +30,21 @@ namespace Player {
         [SerializeField] private LayerMask collisionLayerMask;
         [SerializeField] private Transform kitchenObjectParentPoint;
         [SerializeField] private List<Vector3> spawnPositions;
+        [SerializeField] private PlayerVisual playerVisual;
         
         private bool _isWalking;
         private Vector3 _lastInteractDirection;
         private KitchenObject _kitchenObject;
         private BaseCounter _selectedCounter;
+
+        private void Start() {
+            GameInput.Instance.OnInteractAction += GameInputOnInteractAction;
+            GameInput.Instance.OnInteractAlternateAction += GameInputOnInteractAlternateAction;
+
+            if (GameManagerMultiplayer.Instance.TryGetPlayerDataForClientId(OwnerClientId, out var playerData)) {
+                playerVisual.SetPlayerColor(GameManagerMultiplayer.Instance.GetPlayerColorByColorId(playerData.colorId));
+            }
+        }
 
         public override void OnNetworkSpawn() {
             if (IsServer) {
@@ -43,7 +53,8 @@ namespace Player {
             
             if (!IsOwner) return;
             LocalInstance = this;
-            transform.position = spawnPositions[(int)OwnerClientId];
+            
+            transform.position = spawnPositions[GameManagerMultiplayer.Instance.GetPlayerDataIndexForClientId(OwnerClientId)];
             localPlayerSpawned?.Invoke(this, EventArgs.Empty);
         }
 
@@ -52,17 +63,7 @@ namespace Player {
                 KitchenObject.DestroyKitchenObject(GetKitchenObject());
             }
         }
-
-        private void OnEnable() {
-            GameInput.Instance.OnInteractAction += GameInputOnInteractAction;
-            GameInput.Instance.OnInteractAlternateAction += GameInputOnInteractAlternateAction;
-        }
-
-        private void OnDisable() {
-            GameInput.Instance.OnInteractAction -= GameInputOnInteractAction;
-            GameInput.Instance.OnInteractAlternateAction -= GameInputOnInteractAlternateAction;
-        }
-
+        
         private void Update() {
             if (!IsOwner) return;
             HandleMovement();
