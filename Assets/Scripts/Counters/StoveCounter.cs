@@ -1,5 +1,6 @@
 using System;
 using KitchenObjects;
+using KitchenPlayer;
 using ScriptableObjects;
 using Unity.Netcode;
 using UnityEngine;
@@ -38,7 +39,7 @@ namespace Counters {
             }
         }
 
-        public override void Interact(Player.Player player) {
+        public override void Interact(Player player) {
             if (!HasKitchenObject() && player.HasKitchenObject()) {
                 if (fryingRecipes.TryGetFryingRecipeIndexWithInput(out var index, player.GetKitchenObject().KitchenObjectScriptable)) {
                     player.GetKitchenObject().SetKitchenObjectParent(this);

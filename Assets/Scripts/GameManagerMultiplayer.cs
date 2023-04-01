@@ -1,23 +1,38 @@
 using System;
 using System.Collections.Generic;
+using KitchenLobby;
 using KitchenObjects;
-using Lobby;
 using ScriptableObjects;
 using Unity.Netcode;
+using Unity.Services.Authentication;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GameManagerMultiplayer : NetworkBehaviour {
     public static GameManagerMultiplayer Instance { get; private set; }
+    
+    public const int MaxPlayers = 4;
+    private const string PlayerPrefsPlayerName = "PlayerNameMultiplayer";
+    
     [SerializeField] private KitchenObjectListScriptable kitchenObjectListScriptable;
     [SerializeField] private List<Color> playerColorList;
 
     private const string GameFullConnectionErrorMessage = "Game is full";
     private const string GameStartedConnectionErrorMessage = "Game already started!";
-    private const int MaxPlayers = 4;
+    
     private NetworkList<PlayerData> _playerDataNetworkList;
     private bool[] _playerPositions;
+    private string _playerName;
+
+    public string PlayerName {
+        get => _playerName;
+        set {
+            _playerName = value;
+            PlayerPrefs.SetString(PlayerPrefsPlayerName, _playerName);
+        }
+    }
+
     public event Action TryingToJoinGame;
     public event Action FailedToJoinGame;
     public event Action AnyPlayerDataChanged;
@@ -26,6 +41,9 @@ public class GameManagerMultiplayer : NetworkBehaviour {
     private void Awake() {
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        PlayerName = PlayerPrefs.GetString(PlayerPrefsPlayerName, $"Player_{Random.Range(1000, 9999)}");
+        
         //NetworkList cannot be initialized on declaration or OnSpawn
         _playerDataNetworkList = new NetworkList<PlayerData>();
         _playerPositions = new bool[MaxPlayers];
@@ -49,6 +67,7 @@ public class GameManagerMultiplayer : NetworkBehaviour {
 
     public void StartClient() {
         TryingToJoinGame?.Invoke();
+        NetworkManager.Singleton.OnClientConnectedCallback += NetworkManagerClientOnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback += _ => FailedToJoinGame?.Invoke();
         NetworkManager.Singleton.StartClient();
     }
@@ -69,6 +88,27 @@ public class GameManagerMultiplayer : NetworkBehaviour {
         response.Approved = true;
     }
 
+    private void NetworkManagerClientOnClientConnectedCallback(ulong clientId) {
+        SetPlayerNameServerRpc(_playerName);
+        SetPlayerIdServerRpc(AuthenticationService.Instance.PlayerId);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetPlayerNameServerRpc(string playerName, ServerRpcParams serverRpcParams = default) {
+        if (!TryGetPlayerDataIndexForClientId(serverRpcParams.Receive.SenderClientId, out var playerDataIndex)) return;
+        var playerData = _playerDataNetworkList[playerDataIndex];
+        playerData.playerName = playerName;
+        _playerDataNetworkList[playerDataIndex] = playerData;
+    }
+    
+    [ServerRpc(RequireOwnership = false)]
+    private void SetPlayerIdServerRpc(string playerId, ServerRpcParams serverRpcParams = default) {
+        if (!TryGetPlayerDataIndexForClientId(serverRpcParams.Receive.SenderClientId, out var playerDataIndex)) return;
+        var playerData = _playerDataNetworkList[playerDataIndex];
+        playerData.playerId = playerId;
+        _playerDataNetworkList[playerDataIndex] = playerData;
+    }
+    
     private void NetworkManagerHostOnClientDisconnectCallback(ulong clientId) {
         if (TryGetPlayerDataIndexForClientId(clientId, out var playerIndex)) {
             _playerPositions[_playerDataNetworkList[playerIndex].position] = false;
@@ -84,6 +124,7 @@ public class GameManagerMultiplayer : NetworkBehaviour {
             position = playerPosition
         });
         _playerPositions[playerPosition] = true;
+        SetPlayerNameServerRpc(_playerName);
     }
     
     public void KickPlayer(ulong clientId) {
@@ -150,15 +191,12 @@ public class GameManagerMultiplayer : NetworkBehaviour {
     }
 
     public bool TryGetPlayerDataForPlayerPosition(int playerPosition, out PlayerData playerData) {
-        Debug.Log($"Fetch data for {playerPosition}");
         foreach (var player in _playerDataNetworkList) {
             if (player.position == playerPosition) {
-                Debug.Log($"FOUND DATA for {playerPosition}");
                 playerData = player;
                 return true;
             }
         }
-        Debug.Log($"NO DATA for {playerPosition}");
         playerData = default;
         return false;
     }

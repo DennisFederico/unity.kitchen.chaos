@@ -6,7 +6,7 @@ using Unity.Netcode;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Player {
+namespace KitchenPlayer {
     public class Player : NetworkBehaviour, IKitchenObjectParent {
 
         public class SelectedCounter {

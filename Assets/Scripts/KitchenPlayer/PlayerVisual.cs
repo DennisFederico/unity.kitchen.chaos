@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Player {
+namespace KitchenPlayer {
     public class PlayerVisual : MonoBehaviour {
         [SerializeField] private MeshRenderer headMeshRenderer;
         [SerializeField] private MeshRenderer bodyMeshRenderer;

@@ -1,4 +1,5 @@
 using System;
+using KitchenPlayer;
 using UnityEngine;
 
 namespace Counters {
@@ -8,20 +9,20 @@ namespace Counters {
         [SerializeField] private GameObject[] selectedVisualArray;
 
         private void Start() {
-            if (Player.Player.LocalInstance != null) {
-                Player.Player.LocalInstance.OnSelectedCounterChanged += PlayerOnSelectedCounterChanged;                
+            if (Player.LocalInstance != null) {
+                Player.LocalInstance.OnSelectedCounterChanged += PlayerOnSelectedCounterChanged;                
             } else {
-                Player.Player.localPlayerSpawned += AnyPlayerSpawned;
+                Player.localPlayerSpawned += AnyPlayerSpawned;
             }
         }
 
         private void AnyPlayerSpawned(object sender, EventArgs e) {
-            if (Player.Player.LocalInstance != null) {
-                Player.Player.LocalInstance.OnSelectedCounterChanged += PlayerOnSelectedCounterChanged;                
+            if (Player.LocalInstance != null) {
+                Player.LocalInstance.OnSelectedCounterChanged += PlayerOnSelectedCounterChanged;                
             }
         }
         
-        private void PlayerOnSelectedCounterChanged(Player.Player.SelectedCounter counterSelectedChange) {
+        private void PlayerOnSelectedCounterChanged(Player.SelectedCounter counterSelectedChange) {
             if (baseCounter == counterSelectedChange.baseCounter) {
                 Selected();
             } else {

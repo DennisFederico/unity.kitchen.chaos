@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 
-namespace Lobby {
+namespace KitchenLobby {
     public class CharacterSelectReady : NetworkBehaviour {
     
         public static CharacterSelectReady Instance { get; private set; }
@@ -36,6 +36,8 @@ namespace Lobby {
             }
 
             if (allPlayersReady) {
+                //We don't accept more connections after the game starts
+                GameLobby.Instance.DeleteLobby();
                 Loader.LoadNetwork(Loader.Scene.GameScene);
             }
         }

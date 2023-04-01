@@ -1,4 +1,4 @@
-using Lobby;
+using KitchenLobby;
 using UnityEngine;
 using UnityEngine.UI;
 

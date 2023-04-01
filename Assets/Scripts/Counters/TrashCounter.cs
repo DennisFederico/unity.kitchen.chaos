@@ -1,5 +1,6 @@
 using System;
 using KitchenObjects;
+using KitchenPlayer;
 using Unity.Netcode;
 
 namespace Counters {
@@ -9,12 +10,12 @@ namespace Counters {
         public new static void ResetStaticEventHandler() {
             ObjectTrashed = null;
         }
-        public override void Interact(Player.Player player) {
+        public override void Interact(Player player) {
             if (!player.HasKitchenObject()) return;
             TrashKitchenObject(player.GetKitchenObject());
         }
 
-        public override void InteractAlternate(Player.Player player) {
+        public override void InteractAlternate(Player player) {
             if (!player.HasKitchenObject()) return;
             TrashKitchenObject(player.GetKitchenObject());
         }

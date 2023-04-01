@@ -1,5 +1,6 @@
 using System;
 using KitchenObjects;
+using KitchenPlayer;
 using ScriptableObjects;
 using Unity.Netcode;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace Counters {
             return kitchenObjectScriptable.sprite;
         }
         
-        public override void Interact(Player.Player player) {
+        public override void Interact(Player player) {
             if (!player.HasKitchenObject()) {
                 KitchenObject.SpawnKitchenObject(kitchenObjectScriptable, player);
                 InteractLogicServerRpc();

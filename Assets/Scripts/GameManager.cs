@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Player;
+using KitchenPlayer;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;

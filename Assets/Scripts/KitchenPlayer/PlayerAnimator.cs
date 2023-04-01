@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Player {
+namespace KitchenPlayer {
     public class PlayerAnimator : NetworkBehaviour {
         private Player _player;
     

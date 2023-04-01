@@ -1,4 +1,5 @@
 using Counters;
+using KitchenPlayer;
 using UnityEngine;
 
 public class ResetStaticData : MonoBehaviour {
@@ -6,6 +7,6 @@ public class ResetStaticData : MonoBehaviour {
         BaseCounter.ResetStaticEventHandler();
         CuttingCounter.ResetStaticEventHandler();
         TrashCounter.ResetStaticEventHandler();
-        Player.Player.ResetStaticEventHandler();
+        Player.ResetStaticEventHandler();
     }
 }

@@ -1,5 +1,5 @@
-using Lobby;
-using Player;
+using KitchenLobby;
+using KitchenPlayer;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class CharacterSelectPlayer : MonoBehaviour {
 
     [SerializeField] private int playerPosition;
+    [SerializeField] private TextMeshPro playerNameText;
     [SerializeField] private TMP_Text readyText;
     [SerializeField] private PlayerVisual playerVisual;
     [SerializeField] private Button kickPlayerButton;
@@ -15,6 +16,7 @@ public class CharacterSelectPlayer : MonoBehaviour {
     private void Awake() {
         kickPlayerButton.onClick.AddListener(() => {
             if (GameManagerMultiplayer.Instance.TryGetPlayerDataForPlayerPosition(playerPosition, out var playerData)) {
+                GameLobby.Instance.KickPlayerFromLobby(playerData.playerId.ToString());
                 GameManagerMultiplayer.Instance.KickPlayer(playerData.clientId);
             }
         });
@@ -35,6 +37,7 @@ public class CharacterSelectPlayer : MonoBehaviour {
         if (GameManagerMultiplayer.Instance.TryGetPlayerDataForPlayerPosition(playerPosition, out var playerData)) {
             readyText.gameObject.SetActive(CharacterSelectReady.Instance.IsPlayerReady(playerData.clientId));
             playerVisual.SetPlayerColor(GameManagerMultiplayer.Instance.GetPlayerColorByColorId(playerData.colorId));
+            playerNameText.text = playerData.playerName.ToString();
             Show();
         } else {
             Hide();

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Player {
+namespace KitchenPlayer {
     public class GameInput : MonoBehaviour {
         private const string ConstPlayerPrefsBindings = "KeyBindings";
         public static GameInput Instance { private set; get; }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Counters;
+using KitchenPlayer;
 using ScriptableObjects;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -19,7 +20,7 @@ public class AudioManager : MonoBehaviour {
     }
 
     private void Start() {
-        Player.Player.anyonePickedSomething += PlayerOnPickedSomething;
+        Player.anyonePickedSomething += PlayerOnPickedSomething;
         BaseCounter.AnyItemPlaced += BaseCounterOnAnyItemPlaced;
         DeliveryManager.Instance.FailedOrder += DeliveryManagerOnFailedOrder;
         DeliveryManager.Instance.SuccessfulOrder += DeliveryManagerOnSuccessfulOrder;
@@ -50,7 +51,7 @@ public class AudioManager : MonoBehaviour {
     }
 
     private void PlayerOnPickedSomething(object sender, EventArgs e) {
-        var player = (Player.Player) sender;
+        var player = (Player) sender;
         PlayRandomSound(audioClipReferences.objectPickup, player.transform.position);
     }
 

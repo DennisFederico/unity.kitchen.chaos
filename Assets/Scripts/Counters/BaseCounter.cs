@@ -1,5 +1,6 @@
 using System;
 using KitchenObjects;
+using KitchenPlayer;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -13,9 +14,9 @@ namespace Counters {
         [SerializeField] private Transform kitchenObjectParentPoint;
         private KitchenObject _kitchenObject;
 
-        public abstract void Interact(Player.Player player);
+        public abstract void Interact(Player player);
     
-        public virtual void InteractAlternate(Player.Player player) {
+        public virtual void InteractAlternate(Player player) {
         }
 
         public Transform GetKitchenObjectParentPoint() {

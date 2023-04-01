@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Player {
+namespace KitchenPlayer {
     public class PlayerSoundFx : MonoBehaviour {
         private Player _player;
         private float _footStepsTimer;

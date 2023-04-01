@@ -1,5 +1,6 @@
 using System;
 using KitchenObjects;
+using KitchenPlayer;
 using ScriptableObjects;
 using Unity.Netcode;
 using UnityEngine;
@@ -39,7 +40,7 @@ namespace Counters {
             PlateSpawned?.Invoke();
         }
 
-        public override void Interact(Player.Player player) {
+        public override void Interact(Player player) {
             if (player.HasKitchenObject() || _spawnedPlatesAmount == 0) return;
             KitchenObject.SpawnKitchenObject(plateKitchenObjectScriptable, player);
             InteractLogicServerRpc();

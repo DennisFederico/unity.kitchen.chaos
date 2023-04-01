@@ -1,5 +1,5 @@
 using System;
-using Player;
+using KitchenPlayer;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;

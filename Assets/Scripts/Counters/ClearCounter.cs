@@ -1,9 +1,10 @@
 using KitchenObjects;
+using KitchenPlayer;
 
 namespace Counters {
     public class ClearCounter : BaseCounter {
 
-        public override void Interact(Player.Player player) {
+        public override void Interact(Player player) {
             if (!HasKitchenObject() && player.HasKitchenObject()) {
                 player.GetKitchenObject().SetKitchenObjectParent(this);
             } else if (HasKitchenObject()) { 
