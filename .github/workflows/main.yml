@@ -16,6 +16,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        unityVersion: 
+          - 2022.2.12f1
         targetPlatform:
           - StandaloneOSX
           - StandaloneWindows64
@@ -43,7 +45,8 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           #UNITY_VERSION: 2022.2.12f1
         with:
-          customImage: 'unityci/editor:2022.2.12f1-base-1.0.1'
+          unityVersion: ${{ matrix.unityVersion }}
+          #customImage: 'unityci/editor:2022.2.12f1-base-1.0.1'
           targetPlatform: ${{ matrix.targetPlatform }}
 
       # Output
