@@ -25,10 +25,7 @@ namespace UI {
         [SerializeField] private TextMeshProUGUI moveRightText;
         [SerializeField] private Button interactButton;
         [SerializeField] private TextMeshProUGUI interactText;
-
-        [FormerlySerializedAs("interactAlt")] [SerializeField]
-        private Button interactAltButton;
-
+        [SerializeField] private Button interactAltButton;
         [SerializeField] private TextMeshProUGUI interactAltText;
         [SerializeField] private Button pauseButton;
         [SerializeField] private TextMeshProUGUI pauseText;

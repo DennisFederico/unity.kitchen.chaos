@@ -26,6 +26,8 @@ namespace UI {
             var joinedLobby = GameLobby.Instance.GetJoinedLobby();
             lobbyNameText.text = $"Lobby Name: {joinedLobby?.Name}";
             lobbyCodeText.text = $"Lobby Code: {joinedLobby?.LobbyCode}";
+            lobbyNameText.gameObject.SetActive(GameManagerMultiplayer.playMultiplayer);
+            lobbyCodeText.gameObject.SetActive(GameManagerMultiplayer.playMultiplayer);
         }
     }
 }

@@ -12,8 +12,8 @@ public class DeliveryManager : NetworkBehaviour {
     public static DeliveryManager Instance { get; private set; }
     public Action newOrderArrived;
     public Action orderFulfilled;
-    public event EventHandler SuccessfulOrder;
-    public event EventHandler FailedOrder;
+    public event Action<Vector3> SuccessfulOrder;
+    public event Action<Vector3> FailedOrder;
     
     [SerializeField] private EndRecipeListScriptable levelRecipeList;
     private int _successfulRecipes;
@@ -67,9 +67,9 @@ public class DeliveryManager : NetworkBehaviour {
     public void DeliverPlate(DeliveryCounter counter, PlateKitchenObject plate) {
         //match plate ingredients to waiting recipes
         if (TryFulfillWaitingRecipe(out var waitingRecipeIndex, plate.GetCurrentIngredients())) {
-            DeliverCorrectRecipeServerRpc(waitingRecipeIndex);
+            DeliverCorrectRecipeServerRpc(waitingRecipeIndex, counter.transform.position);
         } else {
-            DeliverIncorrectRecipeServerRpc();
+            DeliverIncorrectRecipeServerRpc(counter.transform.position);
         }
     }
 
@@ -94,30 +94,29 @@ public class DeliveryManager : NetworkBehaviour {
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void DeliverIncorrectRecipeServerRpc() {
-        DeliverIncorrectRecipeClientRpc();
+    private void DeliverIncorrectRecipeServerRpc(Vector3 counterPosition) {
+        DeliverIncorrectRecipeClientRpc(counterPosition);
     }
 
     //TODO SHOULD USE THE COUNTER GAME OBJECT ID 
     [ClientRpc]
-    private void DeliverIncorrectRecipeClientRpc() {
-        // FailedOrder?.Invoke(counter, EventArgs.Empty);
-        FailedOrder?.Invoke(this, EventArgs.Empty);
+    private void DeliverIncorrectRecipeClientRpc(Vector3 counterPosition) {
+        FailedOrder?.Invoke(counterPosition);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void DeliverCorrectRecipeServerRpc(int waitingRecipeIndex) {
-        DeliverCorrectRecipeClientRpc(waitingRecipeIndex);
+    private void DeliverCorrectRecipeServerRpc(int waitingRecipeIndex, Vector3 counterPosition) {
+        DeliverCorrectRecipeClientRpc(waitingRecipeIndex, counterPosition);
     }
 
     [ClientRpc]
-    private void DeliverCorrectRecipeClientRpc(int waitingRecipeIndex) {
+    private void DeliverCorrectRecipeClientRpc(int waitingRecipeIndex, Vector3 counterPosition) {
         //Here is the actual behavior when a correct recipe is delivered (by any player)
         _successfulRecipes++;
         orderFulfilled?.Invoke();
         _waitingOrders.RemoveAt(waitingRecipeIndex);
         //TODO... here we need the GameObjectId of the counter
-        SuccessfulOrder?.Invoke(this, EventArgs.Empty);
+        SuccessfulOrder?.Invoke(counterPosition);
     }
 
     public int GetSuccessfulRecipesAmount() {

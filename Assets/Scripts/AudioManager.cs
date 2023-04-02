@@ -10,13 +10,17 @@ public class AudioManager : MonoBehaviour {
 
     private const string ConstPlayerPrefsSoundFxVolume = "SoundFxVolume"; 
     public static AudioManager Instance { private set; get; }
+    
     [SerializeField] private AudioClipReferencesScriptable audioClipReferences;
 
+    private AudioSource _fxAudioSource;
     private float _volume = 1f;
     
     private void Awake() {
         Instance = this;
         _volume = PlayerPrefs.GetFloat(ConstPlayerPrefsSoundFxVolume, 1f);
+        _fxAudioSource = GetComponent<AudioSource>();
+        _fxAudioSource.volume = _volume;
     }
 
     private void Start() {
@@ -60,18 +64,13 @@ public class AudioManager : MonoBehaviour {
         PlayRandomSound(audioClipReferences.chop, counter.transform.position);
     }
 
-    //TODO NEEDS A HOLD OF THE COUNTER
-    private void DeliveryManagerOnSuccessfulOrder(object sender, EventArgs e) {
-        //var counter = (BaseCounter) sender;
-        // PlayRandomSound(audioClipReferences.deliverySuccess, counter.transform.position);
-        PlayRandomSound(audioClipReferences.deliverySuccess, Camera.main.transform.position);
+    private void DeliveryManagerOnSuccessfulOrder(Vector3 position) {
+        PlayRandomSound(audioClipReferences.deliverySuccess, position);
     }
 
     //TODO NEEDS A HOLD OF THE COUNTER
-    private void DeliveryManagerOnFailedOrder(object sender, EventArgs e) {
-        //var counter = (BaseCounter) sender;
-        // PlayRandomSound(audioClipReferences.deliveryFail, counter.transform.position);
-        PlayRandomSound(audioClipReferences.deliveryFail, Camera.main.transform.position);
+    private void DeliveryManagerOnFailedOrder(Vector3 position) {
+        PlayRandomSound(audioClipReferences.deliveryFail, position);
     }
 
     private void PlayRandomSound(IReadOnlyList<AudioClip> audioClipArray, Vector3 position, float volume = 1f) {
@@ -87,7 +86,7 @@ public class AudioManager : MonoBehaviour {
         if (_volume > 1.05f) {
             _volume = 0f;
         }
-
+        _fxAudioSource.volume = _volume;
         PlayerPrefs.SetFloat(ConstPlayerPrefsSoundFxVolume, _volume);
         PlayerPrefs.Save();
     }

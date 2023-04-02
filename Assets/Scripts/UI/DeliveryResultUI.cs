@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,7 +28,7 @@ namespace UI {
             gameObject.SetActive(false);
         }
 
-        private void DeliveryManagerOnSuccessfulOrder(object sender, EventArgs e) {
+        private void DeliveryManagerOnSuccessfulOrder(Vector3 position) {
             gameObject.SetActive(true);
             backgroundImage.color = successColor;
             iconImage.sprite = successSprite;
@@ -37,7 +36,7 @@ namespace UI {
             _animator.SetTrigger(_animationPopUpTrigger);
         }
 
-        private void DeliveryManagerOnFailedOrder(object sender, EventArgs e) {
+        private void DeliveryManagerOnFailedOrder(Vector3 position) {
             gameObject.SetActive(true);
             backgroundImage.color = failedColor;
             iconImage.sprite = failedSprite;

@@ -14,8 +14,7 @@ namespace UI {
             GameManager.Instance.GameStateChanged += GameManagerOnGameStateChanged;
             playAgainButton.onClick.AddListener(() => {
                 NetworkManager.Singleton.Shutdown();
-                //Loader.Load(Loader.Scene.MainMenu);
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                Loader.Load(Loader.Scene.MainMenu);
             });
             Hide();
         }
