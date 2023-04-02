@@ -16,6 +16,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        unityVersion:
+          - 2022.2.12f1
         targetPlatform:
           - StandaloneOSX
           - StandaloneWindows64
