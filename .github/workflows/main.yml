@@ -41,6 +41,7 @@ jobs:
         env:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_VERSION: 2022.2.12f1
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
 
