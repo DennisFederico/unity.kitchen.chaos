@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Services.Lobbies.Models;
@@ -35,8 +36,11 @@ namespace UI {
             UpdateLobbyList(new List<Lobby>());
         }
 
+        private void OnDestroy() {
+            GameLobby.Instance.LobbyListChanged -= UpdateLobbyList;
+        }
+
         private void UpdateLobbyList(List<Lobby> lobbies) {
-            Debug.Log("Updating UI");
             foreach (Transform child in lobbyListContainer) {
                 Destroy(child.gameObject);
             }

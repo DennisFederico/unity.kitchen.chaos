@@ -5,6 +5,7 @@ using Unity.Services.Core;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GameLobby : MonoBehaviour {
@@ -45,7 +46,10 @@ public class GameLobby : MonoBehaviour {
     }
 
     private void HandleLobbyListRefresh() {
-        if (_joinedLobby == null && AuthenticationService.Instance.IsSignedIn) {
+        if (_joinedLobby == null &&
+            AuthenticationService.Instance.IsSignedIn &&
+            SceneManager.GetActiveScene().name == Loader.Scene.LobbyScene.ToString()
+           ) {
             _lobbyListRefreshTimer -= Time.unscaledDeltaTime;
             if (_lobbyListRefreshTimer <= 0f) {
                 _lobbyListRefreshTimer = LobbyListRefreshTimerMax;
@@ -90,7 +94,6 @@ public class GameLobby : MonoBehaviour {
                 }
             };
             QueryResponse queryResponse = await LobbyService.Instance.QueryLobbiesAsync(queryLobbiesOptions);
-            Debug.Log($"LobbyList {queryResponse.Results.Count}");
             LobbyListChanged?.Invoke(queryResponse.Results);
         } catch (LobbyServiceException e) {
             Debug.LogError(e);
@@ -107,7 +110,7 @@ public class GameLobby : MonoBehaviour {
             QuickJoinLobbyFailed?.Invoke(this, EventArgs.Empty);
         }
     }
-    
+
     public async void JoinWithId(string lobbyId) {
         JoinLobbyStarted?.Invoke(this, EventArgs.Empty);
         try {
