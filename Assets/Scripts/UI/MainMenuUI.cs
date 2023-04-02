@@ -3,11 +3,19 @@ using UnityEngine.UI;
 
 namespace UI {
     public class MainMenuUI : MonoBehaviour {
-        [SerializeField] private Button playButton;
+        [SerializeField] private Button singlePlayerButton;
+        [SerializeField] private Button multiplayerButton;
         [SerializeField] private Button quitButton;
 
         private void Awake() {
-            playButton.onClick.AddListener(() => { Loader.Load(Loader.Scene.LobbyScene); });
+            singlePlayerButton.onClick.AddListener(() => {
+                GameManagerMultiplayer.playMultiplayer = false;
+                Loader.Load(Loader.Scene.LobbyScene);
+            });
+            multiplayerButton.onClick.AddListener(() => {
+                GameManagerMultiplayer.playMultiplayer = true;
+                Loader.Load(Loader.Scene.LobbyScene);
+            });
 
             quitButton.onClick.AddListener(Application.Quit);
 

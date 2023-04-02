@@ -38,7 +38,7 @@ namespace KitchenObjects {
             _kitchenObjectParent?.ClearKitchenObject();
 
             if (kitchenObjectParent.HasKitchenObject()) {
-                Debug.Log($"ERROR IKitchenObjectParent {kitchenObjectParent} already has a KitchenObject. Cannot set {this}");
+                Debug.LogError($"ERROR IKitchenObjectParent {kitchenObjectParent} already has a KitchenObject. Cannot set {this}");
             }
             _kitchenObjectParent = kitchenObjectParent;
             _kitchenObjectParent.SetKitchenObject(this);

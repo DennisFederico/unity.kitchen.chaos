@@ -21,6 +21,7 @@ namespace UI {
 
         public new void Show() {
             base.Show();
+            createLobbyButton.Select();
         }
     }
 }

@@ -26,7 +26,9 @@ namespace UI {
             createLobbyButton.onClick.AddListener(() => lobbyCreateUI.Show());
             quickJoinButton.onClick.AddListener(() => GameLobby.Instance.QuickJoin());
             joinWithCodeButton.onClick.AddListener(() => GameLobby.Instance.JoinWithCode(lobbyCodeInputField.text));
-            Show();
+            if (GameManagerMultiplayer.playMultiplayer) {
+                Show();
+            }
         }
 
         private void Start() {

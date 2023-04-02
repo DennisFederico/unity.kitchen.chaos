@@ -4,6 +4,7 @@ using KitchenLobby;
 using KitchenObjects;
 using ScriptableObjects;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using Unity.Services.Authentication;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,7 +12,8 @@ using Random = UnityEngine.Random;
 
 public class GameManagerMultiplayer : NetworkBehaviour {
     public static GameManagerMultiplayer Instance { get; private set; }
-    
+
+    public static bool playMultiplayer = true;
     public const int MaxPlayers = 4;
     private const string PlayerPrefsPlayerName = "PlayerNameMultiplayer";
     
@@ -48,6 +50,13 @@ public class GameManagerMultiplayer : NetworkBehaviour {
         _playerDataNetworkList = new NetworkList<PlayerData>();
         _playerPositions = new bool[MaxPlayers];
         _playerDataNetworkList.OnListChanged += PlayerDataNetworkListOnListChanged;
+    }
+
+    private void Start() {
+        if (!playMultiplayer) {
+            StartHost();
+            Loader.LoadNetwork(Loader.Scene.CharacterSelectionScene);
+        }
     }
 
     private void PlayerDataNetworkListOnListChanged(NetworkListEvent<PlayerData> changeEvent) {

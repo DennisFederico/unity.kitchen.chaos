@@ -23,7 +23,7 @@ namespace UI {
             GameManager.Instance.LocalPlayerReadyChanged += GameManagerOnLocalPlayerReadyChanged;
             UpdateVisuals();
             if (GameManager.Instance.IsWaitingToStart()) {
-                Show();                
+                Show();
             } else {
                 Hide();
             }

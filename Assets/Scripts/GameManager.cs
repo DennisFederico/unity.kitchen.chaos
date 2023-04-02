@@ -86,6 +86,7 @@ public class GameManager : NetworkBehaviour {
         if (_gameState.Value == GameState.WaitingToStart) {
             _isLocalPlayerReady = true;
             LocalPlayerReadyChanged?.Invoke(this, EventArgs.Empty);
+            _playersReady[NetworkManager.Singleton.LocalClientId] = true;
             SetPlayerReadyServerRpc();
         }
     }
@@ -141,7 +142,6 @@ public class GameManager : NetworkBehaviour {
                 break;
             }
         }
-    
         if (allPlayersReady) {
             _gameState.Value = GameState.StartCountDown;
         }
