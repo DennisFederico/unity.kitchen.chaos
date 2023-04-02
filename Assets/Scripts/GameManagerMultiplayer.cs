@@ -151,12 +151,17 @@ public class GameManagerMultiplayer : NetworkBehaviour {
 
     [ServerRpc(RequireOwnership = false)]
     private void SpawnKitchenObjectServerRpc(int kitchenObjectScriptableIndex, NetworkObjectReference kitchenObjectParentNetworkReference) {
+        
+        kitchenObjectParentNetworkReference.TryGet(out NetworkObject kitchenObjectParentNetworkObject);
+        var kitchenObjectParent = kitchenObjectParentNetworkObject.GetComponent<IKitchenObjectParent>();
+        
+        //Confirm the parent doesn't have an item already
+        if (kitchenObjectParent.HasKitchenObject()) return;
+        
         var kitchenObjectScriptable = kitchenObjectListScriptable.kitchenObjects[kitchenObjectScriptableIndex];
         var kitchenObjectInstance = Instantiate(kitchenObjectScriptable.prefab);
         kitchenObjectInstance.GetComponent<NetworkObject>().Spawn(true);
-
-        kitchenObjectParentNetworkReference.TryGet(out NetworkObject kitchenObjectParentNetworkObject);
-        var kitchenObjectParent = kitchenObjectParentNetworkObject.GetComponent<IKitchenObjectParent>();
+        
         var kitchenObject = kitchenObjectInstance.GetComponent<KitchenObject>();
         kitchenObject.SetKitchenObjectParent(kitchenObjectParent);
     }
@@ -167,7 +172,7 @@ public class GameManagerMultiplayer : NetworkBehaviour {
 
     [ServerRpc(RequireOwnership = false)]
     private void DestroyKitchenObjectServerRpc(NetworkObjectReference kitchenObjectNetworkReference) {
-        kitchenObjectNetworkReference.TryGet(out NetworkObject kitchenObjectNetworkObject);
+        if (!kitchenObjectNetworkReference.TryGet(out NetworkObject kitchenObjectNetworkObject)) return;
         var kitchenObject = kitchenObjectNetworkObject.GetComponent<KitchenObject>();
         ClearKitchenObjectFromParentClientRpc(kitchenObjectNetworkReference);
         kitchenObject.DestroySelf();
